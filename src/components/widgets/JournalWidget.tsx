@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useJournal } from '../../hooks/useJournal';
-import { Loader2, CloudCheck, CloudUpload, Smile, ShieldAlert, Lock } from 'lucide-react';
+import { Loader2, CloudCheck, CloudUpload, Smile, ShieldAlert, Lock, Save } from 'lucide-react';
+import { toast } from 'sonner';
 
 export const JournalWidget: React.FC = () => {
   const { todayEntry, isLoading, updateEntry } = useJournal();
@@ -15,6 +16,27 @@ export const JournalWidget: React.FC = () => {
     }
   }, [todayEntry]);
 
+  // Manual Save Logic
+  const handleSave = () => {
+    if (!todayEntry) return;
+    updateEntry.mutate({ id: todayEntry.id, updates: { content } }, {
+      onSuccess: () => toast.success('Tactical log synchronized'),
+      onError: () => toast.error('Uplink failed. Save aborted.')
+    });
+  };
+
+  // Keyboard Shortcut: Ctrl+S
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if ((e.ctrlKey || e.metaKey) && e.key === 's') {
+        e.preventDefault();
+        handleSave();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [content, todayEntry]);
+
   // Debounce Auto-save
   useEffect(() => {
     if (!todayEntry || content === todayEntry.content || !hasConsent) return;
@@ -23,7 +45,7 @@ export const JournalWidget: React.FC = () => {
     const timeoutId = setTimeout(() => {
       updateEntry.mutate({ id: todayEntry.id, updates: { content } });
       setIsTyping(false);
-    }, 1500); // 1.5s debounce
+    }, 3000); // 3s debounce for auto-save
 
     return () => clearTimeout(timeoutId);
   }, [content, todayEntry, updateEntry, hasConsent]);
@@ -73,22 +95,31 @@ export const JournalWidget: React.FC = () => {
 
   return (
     <div className="animate-fade-in max-w-4xl mx-auto h-full flex flex-col">
-      <header className="mb-10 flex justify-between items-end">
+      <header className="mb-10 flex justify-between items-end px-2">
         <div>
           <h2 className="text-3xl font-bold text-white mb-2 tracking-tight">Daily Journal</h2>
           <p className="text-batcave-text-secondary">Document your journey and reflect on today's progress.</p>
         </div>
         
-        <div className="flex items-center gap-2 text-[10px] uppercase tracking-widest font-bold">
-          {updateEntry.isPending || isTyping ? (
-            <span className="text-batcave-blue flex items-center gap-2">
-              <CloudUpload className="w-3 h-3" /> Encrypting & Saving...
-            </span>
-          ) : (
-            <span className="text-green-500/50 flex items-center gap-2">
-              <CloudCheck className="w-3 h-3" /> Securely Stored
-            </span>
-          )}
+        <div className="flex flex-col items-end gap-3">
+          <div className="flex items-center gap-2 text-[10px] uppercase tracking-widest font-bold">
+            {updateEntry.isPending || isTyping ? (
+              <span className="text-batcave-blue flex items-center gap-2">
+                <CloudUpload className="w-3 h-3" /> Syncing...
+              </span>
+            ) : (
+              <span className="text-green-500/50 flex items-center gap-2">
+                <CloudCheck className="w-3 h-3" /> Log Secured
+              </span>
+            )}
+          </div>
+          <button 
+            onClick={handleSave}
+            disabled={updateEntry.isPending || content === todayEntry?.content}
+            className="flex items-center gap-2 px-6 py-2.5 bg-white/5 hover:bg-white/10 text-white text-[10px] font-black uppercase tracking-widest rounded-xl border border-white/10 transition-all disabled:opacity-20"
+          >
+            <Save className="w-3 h-3" /> Confirm Entry
+          </button>
         </div>
       </header>
 
@@ -110,8 +141,12 @@ export const JournalWidget: React.FC = () => {
           value={content}
           onChange={(e) => setContent(e.target.value)}
           placeholder="What's on your mind, Bruce?"
-          className="flex-1 bg-transparent border-none outline-none resize-none text-gray-200 leading-relaxed placeholder:text-gray-700 custom-scrollbar"
+          className="flex-1 bg-transparent border-none outline-none resize-none text-gray-200 leading-relaxed placeholder:text-gray-700 custom-scrollbar font-mono"
         />
+
+        <div className="absolute bottom-4 left-8 text-[8px] text-white/10 font-mono uppercase tracking-widest">
+          Shortcut: Ctrl + S to Authorize
+        </div>
 
         {/* Decorative corner element */}
         <div className="absolute bottom-4 right-4 text-[8px] text-white/5 font-mono uppercase tracking-[0.5em] select-none pointer-events-none">
