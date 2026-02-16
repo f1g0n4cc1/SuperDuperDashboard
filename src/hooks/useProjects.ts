@@ -1,5 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { supabase } from '../services/supabase';
+import { projectsApi } from '../api/projects';
+import { tasksApi } from '../api/tasks';
 import type { Project, ProjectWithStats, CreateProjectInput } from '../types/projects';
 import type { Task } from '../types/tasks';
 import { useAuth } from '../context/AuthContext';
@@ -12,22 +13,13 @@ export const useProjects = () => {
   const { data: projects = [], isLoading } = useQuery({
     queryKey: QUERY_KEY,
     queryFn: async () => {
-      // 1. Fetch Projects
-      const { data: projectsData, error: projectsError } = await supabase
-        .from('projects')
-        .select('*')
-        .order('created_at', { ascending: true });
+      // 1. Fetch Projects and Tasks in parallel
+      const [projectsData, tasksData] = await Promise.all([
+        projectsApi.list(),
+        tasksApi.list()
+      ]);
 
-      if (projectsError) throw projectsError;
-
-      // 2. Fetch Tasks to calculate progress
-      const { data: tasksData, error: tasksError } = await supabase
-        .from('tasks')
-        .select('project_id, status');
-
-      if (tasksError) throw tasksError;
-
-      // 3. Aggregate stats
+      // 2. Aggregate stats
       return (projectsData as Project[]).map(project => {
         const projectTasks = (tasksData as Task[]).filter(t => t.project_id === project.id);
         const totalTasks = projectTasks.length;
@@ -46,16 +38,7 @@ export const useProjects = () => {
   });
 
   const createProject = useMutation({
-    mutationFn: async (newProject: CreateProjectInput) => {
-      const { data, error } = await supabase
-        .from('projects')
-        .insert([newProject])
-        .select()
-        .single();
-
-      if (error) throw error;
-      return data as Project;
-    },
+    mutationFn: (newProject: CreateProjectInput) => projectsApi.create(newProject),
     onSuccess: () => queryClient.invalidateQueries({ queryKey: QUERY_KEY }),
   });
 

@@ -1,5 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { supabase } from '../services/supabase';
+import { calendarApi } from '../api/calendar';
 import type { CalendarEvent, CreateCalendarEventInput } from '../types/calendar';
 import { useAuth } from '../context/AuthContext';
 import { useCalendar } from './useCalendar';
@@ -12,29 +12,12 @@ export const useCalendarSync = () => {
 
   const { data: localEvents = [], isLoading: localLoading } = useQuery({
     queryKey: QUERY_KEY,
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from('calendar_events')
-        .select('*')
-        .order('start_time', { ascending: true });
-
-      if (error) throw error;
-      return data as CalendarEvent[];
-    },
+    queryFn: () => calendarApi.list(),
     enabled: !!user,
   });
 
   const createEvent = useMutation({
-    mutationFn: async (newEvent: CreateCalendarEventInput) => {
-      const { data, error } = await supabase
-        .from('calendar_events')
-        .insert([{ ...newEvent, user_id: user?.id }])
-        .select()
-        .single();
-
-      if (error) throw error;
-      return data as CalendarEvent;
-    },
+    mutationFn: (newEvent: CreateCalendarEventInput) => calendarApi.create(newEvent),
     onSuccess: () => queryClient.invalidateQueries({ queryKey: QUERY_KEY }),
   });
 

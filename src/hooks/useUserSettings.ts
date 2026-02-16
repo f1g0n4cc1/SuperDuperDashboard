@@ -1,5 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { supabase } from '../services/supabase';
+import { settingsApi } from '../api/settings';
 import { QUERY_KEYS } from '../lib/queryKeys';
 import { type UserSettings, type DashboardLayout } from '../types/settings';
 import { useAuth } from '../context/AuthContext';
@@ -20,12 +20,7 @@ export const useUserSettings = () => {
   const { data: settings, isLoading } = useQuery({
     queryKey: QUERY_KEYS.settings,
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from('user_settings')
-        .select('*')
-        .single();
-
-      if (error && error.code !== 'PGRST116') throw error;
+      const data = await settingsApi.get();
       
       // If no settings exist yet, return default
       if (!data) return { dashboard_layout: DEFAULT_LAYOUT } as UserSettings;
@@ -37,20 +32,7 @@ export const useUserSettings = () => {
 
   // 2. Update Layout Mutation
   const updateLayout = useMutation({
-    mutationFn: async (newLayout: DashboardLayout) => {
-      const { data, error } = await supabase
-        .from('user_settings')
-        .upsert({ 
-          user_id: user?.id, 
-          dashboard_layout: newLayout,
-          updated_at: new Date().toISOString() 
-        })
-        .select()
-        .single();
-
-      if (error) throw error;
-      return data;
-    },
+    mutationFn: (newLayout: DashboardLayout) => settingsApi.update(newLayout),
     onMutate: async (newLayout) => {
       await queryClient.cancelQueries({ queryKey: QUERY_KEYS.settings });
       const previousSettings = queryClient.getQueryData<UserSettings>(QUERY_KEYS.settings);

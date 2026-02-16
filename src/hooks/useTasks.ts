@@ -1,5 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { supabase } from '../services/supabase';
+import { tasksApi } from '../api/tasks';
 import { QUERY_KEYS } from '../lib/queryKeys';
 import { type Task, type CreateTaskInput, type UpdateTaskInput } from '../types/tasks';
 import { useAuth } from '../context/AuthContext';
@@ -12,36 +12,13 @@ export const useTasks = (projectId?: string) => {
   // 1. Fetch Tasks
   const { data: tasks = [], isLoading, error } = useQuery({
     queryKey,
-    queryFn: async () => {
-      let query = supabase
-        .from('tasks')
-        .select('*')
-        .order('created_at', { ascending: false });
-
-      if (projectId) {
-        query = query.eq('project_id', projectId);
-      }
-
-      const { data, error } = await query;
-
-      if (error) throw error;
-      return data as Task[];
-    },
+    queryFn: () => tasksApi.list(projectId),
     enabled: !!user,
   });
 
   // 2. Create Task Mutation
   const createTask = useMutation({
-    mutationFn: async (newTask: CreateTaskInput) => {
-      const { data, error } = await supabase
-        .from('tasks')
-        .insert([newTask])
-        .select()
-        .single();
-
-      if (error) throw error;
-      return data as Task;
-    },
+    mutationFn: (newTask: CreateTaskInput) => tasksApi.create(newTask),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: QUERY_KEYS.tasks });
     },
@@ -49,17 +26,8 @@ export const useTasks = (projectId?: string) => {
 
   // 3. Update Task (Optimistic UI)
   const updateTask = useMutation({
-    mutationFn: async ({ id, updates }: { id: string; updates: UpdateTaskInput }) => {
-      const { data, error } = await supabase
-        .from('tasks')
-        .update(updates)
-        .eq('id', id)
-        .select()
-        .single();
-
-      if (error) throw error;
-      return data as Task;
-    },
+    mutationFn: ({ id, updates }: { id: string; updates: UpdateTaskInput }) => 
+      tasksApi.update(id, updates),
     onMutate: async ({ id, updates }) => {
       // Cancel outgoing refetches
       await queryClient.cancelQueries({ queryKey });

@@ -1,5 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { supabase } from '../services/supabase';
+import { goalsApi } from '../api/goals';
 import type { Goal, CreateGoalInput, UpdateGoalInput } from '../types/goals';
 import { useAuth } from '../context/AuthContext';
 
@@ -10,44 +10,18 @@ export const useGoals = () => {
 
   const { data: goals = [], isLoading } = useQuery({
     queryKey: QUERY_KEY,
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from('goals')
-        .select('*')
-        .order('created_at', { ascending: false });
-
-      if (error) throw error;
-      return data as Goal[];
-    },
+    queryFn: () => goalsApi.list(),
     enabled: !!user,
   });
 
   const createGoal = useMutation({
-    mutationFn: async (newGoal: CreateGoalInput) => {
-      const { data, error } = await supabase
-        .from('goals')
-        .insert([newGoal])
-        .select()
-        .single();
-
-      if (error) throw error;
-      return data as Goal;
-    },
+    mutationFn: (newGoal: CreateGoalInput) => goalsApi.create(newGoal),
     onSuccess: () => queryClient.invalidateQueries({ queryKey: QUERY_KEY }),
   });
 
   const updateGoal = useMutation({
-    mutationFn: async ({ id, updates }: { id: string, updates: UpdateGoalInput }) => {
-      const { data, error } = await supabase
-        .from('goals')
-        .update(updates)
-        .eq('id', id)
-        .select()
-        .single();
-
-      if (error) throw error;
-      return data as Goal;
-    },
+    mutationFn: ({ id, updates }: { id: string, updates: UpdateGoalInput }) => 
+      goalsApi.update(id, updates),
     onSuccess: () => queryClient.invalidateQueries({ queryKey: QUERY_KEY }),
   });
 
