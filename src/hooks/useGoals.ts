@@ -1,5 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { goalsApi } from '../api/goals';
+import { projectSchema } from '../lib/validation'; // Using projectSchema as a base or define goalSchema
 import type { Goal, CreateGoalInput, UpdateGoalInput } from '../types/goals';
 import { useAuth } from '../context/AuthContext';
 import { toast } from 'sonner';
@@ -16,12 +17,18 @@ export const useGoals = () => {
   });
 
   const createGoal = useMutation({
-    mutationFn: (newGoal: CreateGoalInput) => goalsApi.create(newGoal),
+    mutationFn: (newGoal: CreateGoalInput) => {
+      // Basic validation for goals (title)
+      if (!newGoal.title || newGoal.title.length > 255) {
+        throw new Error("Invalid title length");
+      }
+      return goalsApi.create(newGoal);
+    },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: QUERY_KEY });
       toast.success('Objective established');
     },
-    onError: () => toast.error('Failed to establish objective')
+    onError: (err: Error) => toast.error(err.message || 'Failed to establish objective')
   });
 
   const updateGoal = useMutation({

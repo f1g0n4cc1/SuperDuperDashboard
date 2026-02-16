@@ -1,5 +1,6 @@
 import { useInfiniteQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { notesApi } from '../api/notes';
+import { noteSchema } from '../lib/validation';
 import type { Note, CreateNoteInput, UpdateNoteInput } from '../types/notes';
 import { useAuth } from '../context/AuthContext';
 import { toast } from 'sonner';
@@ -28,12 +29,18 @@ export const useNotes = () => {
   const notes = data?.pages.flat() ?? [];
 
   const createNote = useMutation({
-    mutationFn: (newNote: CreateNoteInput) => notesApi.create(newNote),
+    mutationFn: (newNote: CreateNoteInput) => {
+      const validated = noteSchema.safeParse(newNote);
+      if (!validated.success) {
+        throw new Error(validated.error.errors[0].message);
+      }
+      return notesApi.create(validated.data);
+    },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: QUERY_KEY });
       toast.success('Note archived');
     },
-    onError: () => toast.error('Failed to save note')
+    onError: (err: Error) => toast.error(err.message || 'Failed to save note')
   });
 
   const updateNote = useMutation({

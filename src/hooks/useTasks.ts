@@ -1,6 +1,7 @@
 import { useInfiniteQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { tasksApi } from '../api/tasks';
 import { QUERY_KEYS } from '../lib/queryKeys';
+import { taskSchema } from '../lib/validation';
 import { type Task, type CreateTaskInput, type UpdateTaskInput } from '../types/tasks';
 import { useAuth } from '../context/AuthContext';
 import { toast } from 'sonner';
@@ -32,13 +33,19 @@ export const useTasks = (projectId?: string) => {
 
   // 2. Create Task Mutation
   const createTask = useMutation({
-    mutationFn: (newTask: CreateTaskInput) => tasksApi.create(newTask),
+    mutationFn: (newTask: CreateTaskInput) => {
+      const validated = taskSchema.safeParse(newTask);
+      if (!validated.success) {
+        throw new Error(validated.error.errors[0].message);
+      }
+      return tasksApi.create(validated.data);
+    },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: QUERY_KEYS.tasks });
       toast.success('Objective deployed');
     },
-    onError: () => {
-      toast.error('Failed to deploy objective. System offline?');
+    onError: (err: Error) => {
+      toast.error(err.message || 'Failed to deploy objective');
     }
   });
 

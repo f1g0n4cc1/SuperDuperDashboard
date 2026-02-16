@@ -1,5 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { habitsApi } from '../api/habits';
+import { habitSchema } from '../lib/validation';
 import type { Habit, HabitLog, HabitWithLogs, CreateHabitInput } from '../types/habits';
 import { useAuth } from '../context/AuthContext';
 import { toast } from 'sonner';
@@ -37,12 +38,18 @@ export const useHabits = () => {
   });
 
   const createHabit = useMutation({
-    mutationFn: (newHabit: CreateHabitInput) => habitsApi.create(newHabit),
+    mutationFn: (newHabit: CreateHabitInput) => {
+      const validated = habitSchema.safeParse(newHabit);
+      if (!validated.success) {
+        throw new Error(validated.error.errors[0].message);
+      }
+      return habitsApi.create(validated.data);
+    },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: QUERY_KEY });
       toast.success('Habit initialized');
     },
-    onError: () => toast.error('Failed to create habit')
+    onError: (err: Error) => toast.error(err.message || 'Failed to create habit')
   });
 
   const toggleHabit = useMutation({

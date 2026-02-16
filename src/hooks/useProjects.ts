@@ -1,6 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { projectsApi } from '../api/projects';
 import { tasksApi } from '../api/tasks';
+import { projectSchema } from '../lib/validation';
 import type { Project, ProjectWithStats, CreateProjectInput } from '../types/projects';
 import type { Task } from '../types/tasks';
 import { useAuth } from '../context/AuthContext';
@@ -18,12 +19,18 @@ export const useProjects = () => {
   });
 
   const createProject = useMutation({
-    mutationFn: (newProject: CreateProjectInput) => projectsApi.create(newProject),
+    mutationFn: (newProject: CreateProjectInput) => {
+      const validated = projectSchema.safeParse(newProject);
+      if (!validated.success) {
+        throw new Error(validated.error.errors[0].message);
+      }
+      return projectsApi.create(validated.data);
+    },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: QUERY_KEY });
       toast.success('Project deployed');
     },
-    onError: () => toast.error('Failed to deploy project')
+    onError: (err: Error) => toast.error(err.message || 'Failed to deploy project')
   });
 
   return { projects, isLoading, createProject };

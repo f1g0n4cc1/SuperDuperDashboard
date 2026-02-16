@@ -1,6 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { journalApi } from '../api/journal';
 import { QUERY_KEYS } from '../lib/queryKeys';
+import { journalSchema } from '../lib/validation';
 import type { JournalEntry, UpdateJournalInput } from '../types/journal';
 import { useAuth } from '../context/AuthContext';
 import { toast } from 'sonner';
@@ -18,13 +19,18 @@ export const useJournal = () => {
 
   // 2. Update Mutation (The Auto-save Engine)
   const updateEntry = useMutation({
-    mutationFn: ({ id, updates }: { id: string; updates: UpdateJournalInput }) => 
-      journalApi.update(id, updates),
+    mutationFn: ({ id, updates }: { id: string; updates: UpdateJournalInput }) => {
+      const validated = journalSchema.partial().safeParse(updates);
+      if (!validated.success) {
+        throw new Error(validated.error.errors[0].message);
+      }
+      return journalApi.update(id, validated.data);
+    },
     onSuccess: (data) => {
       queryClient.setQueryData(QUERY_KEYS.journal, data);
     },
-    onError: () => {
-      toast.error('Failed to autosave journal entry');
+    onError: (err: Error) => {
+      toast.error(err.message || 'Failed to autosave journal entry');
     }
   });
 
