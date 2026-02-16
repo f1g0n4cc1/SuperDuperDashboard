@@ -1,6 +1,6 @@
 -- 1. Create Profiles Table (1:1 with Auth)
 CREATE TABLE IF NOT EXISTS public.profiles (
-  id UUID REFERENCES auth.users ON DELETE CASCADE PRIMARY KEY,
+  id UUID REFERENCES auth.users ON DELETE CASCADE PRIMARY KEY DEFAULT auth.uid(),
   full_name TEXT,
   avatar_url TEXT,
   theme_pref TEXT DEFAULT 'batcave',
@@ -9,7 +9,7 @@ CREATE TABLE IF NOT EXISTS public.profiles (
 
 -- 2. Create User Settings (JSONB for Widget Layout)
 CREATE TABLE IF NOT EXISTS public.user_settings (
-  user_id UUID REFERENCES auth.users ON DELETE CASCADE PRIMARY KEY,
+  user_id UUID REFERENCES auth.users ON DELETE CASCADE PRIMARY KEY DEFAULT auth.uid(),
   dashboard_layout JSONB DEFAULT '{"widgets": [], "order": []}',
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
@@ -17,7 +17,7 @@ CREATE TABLE IF NOT EXISTS public.user_settings (
 -- 3. Create Tasks Table
 CREATE TABLE IF NOT EXISTS public.tasks (
   id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
-  user_id UUID REFERENCES auth.users ON DELETE CASCADE NOT NULL,
+  user_id UUID REFERENCES auth.users ON DELETE CASCADE NOT NULL DEFAULT auth.uid(),
   title TEXT NOT NULL,
   status TEXT DEFAULT 'todo', -- 'todo', 'in_progress', 'done'
   priority INTEGER DEFAULT 1, -- 1-4 scale
@@ -29,7 +29,7 @@ CREATE TABLE IF NOT EXISTS public.tasks (
 -- 4. Create Journal Entries
 CREATE TABLE IF NOT EXISTS public.journal_entries (
   id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
-  user_id UUID REFERENCES auth.users ON DELETE CASCADE NOT NULL,
+  user_id UUID REFERENCES auth.users ON DELETE CASCADE NOT NULL DEFAULT auth.uid(),
   content TEXT,
   mood INTEGER CHECK (mood >= 1 AND mood <= 10),
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
@@ -48,7 +48,6 @@ CREATE POLICY "Users can only access their own profile" ON public.profiles FOR A
 CREATE POLICY "Users can only access their own settings" ON public.user_settings FOR ALL USING (auth.uid() = user_id);
 -- Tasks
 CREATE POLICY "Users can only access their own tasks" ON public.tasks FOR ALL USING (auth.uid() = user_id);
-CREATE POLICY "Users can insert their own tasks" ON public.tasks FOR INSERT WITH CHECK (auth.uid() = user_id);
 -- Journal
 CREATE POLICY "Users can only access their own journal" ON public.journal_entries FOR ALL USING (auth.uid() = user_id);
 
@@ -63,7 +62,7 @@ BEGIN
   
   RETURN NEW;
 END;
-$$ LANGUAGE plpgsql SECURITY DEFINER;
+$$ LANGUAGE plpgsql SECURITY DEFINER SET search_path = public;
 
 DROP TRIGGER IF EXISTS on_auth_user_created ON auth.users;
 CREATE TRIGGER on_auth_user_created
