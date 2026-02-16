@@ -2,11 +2,15 @@ import { supabase } from '../services/supabase';
 import { type Task, type CreateTaskInput, type UpdateTaskInput } from '../types/tasks';
 
 export const tasksApi = {
-  async list(projectId?: string) {
+  async list(projectId?: string, page = 0, pageSize = 20) {
+    const from = page * pageSize;
+    const to = from + pageSize - 1;
+
     let query = supabase
       .from('tasks')
       .select('*')
-      .order('created_at', { ascending: false });
+      .order('created_at', { ascending: false })
+      .range(from, to);
 
     if (projectId) {
       query = query.eq('project_id', projectId);

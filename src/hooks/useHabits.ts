@@ -12,10 +12,10 @@ export const useHabits = () => {
   const { data: habits = [], isLoading } = useQuery({
     queryKey: QUERY_KEY,
     queryFn: async () => {
-      // 1. Fetch Habits and Logs in parallel
+      // 1. Fetch Habits and recent Logs in parallel
       const [habitsData, logsData] = await Promise.all([
         habitsApi.list(),
-        habitsApi.listLogs()
+        habitsApi.listLogs(30)
       ]);
 
       // 2. Fetch stats for each habit (to get streaks)

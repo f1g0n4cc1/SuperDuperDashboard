@@ -2,11 +2,15 @@ import { supabase } from '../services/supabase';
 import { type Note, type CreateNoteInput, type UpdateNoteInput } from '../types/notes';
 
 export const notesApi = {
-  async list() {
+  async list(page = 0, pageSize = 10) {
+    const from = page * pageSize;
+    const to = from + pageSize - 1;
+
     const { data, error } = await supabase
       .from('notes')
       .select('*')
-      .order('updated_at', { ascending: false });
+      .order('updated_at', { ascending: false })
+      .range(from, to);
 
     if (error) throw error;
     return data as Note[];

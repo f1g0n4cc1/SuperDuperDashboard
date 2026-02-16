@@ -1,4 +1,4 @@
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useInfiniteQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { notesApi } from '../api/notes';
 import type { Note, CreateNoteInput, UpdateNoteInput } from '../types/notes';
 import { useAuth } from '../context/AuthContext';
@@ -8,11 +8,23 @@ export const useNotes = () => {
   const queryClient = useQueryClient();
   const QUERY_KEY = ['notes'];
 
-  const { data: notes = [], isLoading } = useQuery({
+  const { 
+    data, 
+    isLoading,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage 
+  } = useInfiniteQuery({
     queryKey: QUERY_KEY,
-    queryFn: () => notesApi.list(),
+    queryFn: ({ pageParam = 0 }) => notesApi.list(pageParam),
+    initialPageParam: 0,
+    getNextPageParam: (lastPage, allPages) => {
+      return lastPage.length === 10 ? allPages.length : undefined;
+    },
     enabled: !!user,
   });
+
+  const notes = data?.pages.flat() ?? [];
 
   const createNote = useMutation({
     mutationFn: (newNote: CreateNoteInput) => notesApi.create(newNote),

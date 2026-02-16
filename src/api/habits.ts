@@ -12,10 +12,14 @@ export const habitsApi = {
     return data as Habit[];
   },
 
-  async listLogs() {
+  async listLogs(days = 30) {
+    const startDate = new Date();
+    startDate.setDate(startDate.getDate() - days);
+    
     const { data, error } = await supabase
       .from('habit_logs')
-      .select('*');
+      .select('*')
+      .gte('completed_at', startDate.toISOString().split('T')[0]);
 
     if (error) throw error;
     return data as HabitLog[];

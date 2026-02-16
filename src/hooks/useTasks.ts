@@ -1,4 +1,4 @@
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useInfiniteQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { tasksApi } from '../api/tasks';
 import { QUERY_KEYS } from '../lib/queryKeys';
 import { type Task, type CreateTaskInput, type UpdateTaskInput } from '../types/tasks';
@@ -9,12 +9,25 @@ export const useTasks = (projectId?: string) => {
   const queryClient = useQueryClient();
   const queryKey = projectId ? [...QUERY_KEYS.tasks, { projectId }] : QUERY_KEYS.tasks;
 
-  // 1. Fetch Tasks
-  const { data: tasks = [], isLoading, error } = useQuery({
+  // 1. Fetch Tasks (Infinite Scroll Support)
+  const { 
+    data, 
+    isLoading, 
+    error,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage 
+  } = useInfiniteQuery({
     queryKey,
-    queryFn: () => tasksApi.list(projectId),
+    queryFn: ({ pageParam = 0 }) => tasksApi.list(projectId, pageParam),
+    initialPageParam: 0,
+    getNextPageParam: (lastPage, allPages) => {
+      return lastPage.length === 20 ? allPages.length : undefined;
+    },
     enabled: !!user,
   });
+
+  const tasks = data?.pages.flat() ?? [];
 
   // 2. Create Task Mutation
   const createTask = useMutation({
