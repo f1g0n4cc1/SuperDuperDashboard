@@ -4,18 +4,25 @@ import { QUERY_KEYS } from '../lib/queryKeys';
 import { type Task, type CreateTaskInput, type UpdateTaskInput } from '../types/tasks';
 import { useAuth } from '../context/AuthContext';
 
-export const useTasks = () => {
+export const useTasks = (projectId?: string) => {
   const { user } = useAuth();
   const queryClient = useQueryClient();
+  const queryKey = projectId ? [...QUERY_KEYS.tasks, { projectId }] : QUERY_KEYS.tasks;
 
   // 1. Fetch Tasks
   const { data: tasks = [], isLoading, error } = useQuery({
-    queryKey: QUERY_KEYS.tasks,
+    queryKey,
     queryFn: async () => {
-      const { data, error } = await supabase
+      let query = supabase
         .from('tasks')
         .select('*')
         .order('created_at', { ascending: false });
+
+      if (projectId) {
+        query = query.eq('project_id', projectId);
+      }
+
+      const { data, error } = await query;
 
       if (error) throw error;
       return data as Task[];
@@ -55,13 +62,13 @@ export const useTasks = () => {
     },
     onMutate: async ({ id, updates }) => {
       // Cancel outgoing refetches
-      await queryClient.cancelQueries({ queryKey: QUERY_KEYS.tasks });
+      await queryClient.cancelQueries({ queryKey });
 
       // Snapshot previous value
-      const previousTasks = queryClient.getQueryData<Task[]>(QUERY_KEYS.tasks);
+      const previousTasks = queryClient.getQueryData<Task[]>(queryKey);
 
       // Optimistically update to the new value
-      queryClient.setQueryData<Task[]>(QUERY_KEYS.tasks, (old) =>
+      queryClient.setQueryData<Task[]>(queryKey, (old) =>
         old?.map((task) => (task.id === id ? { ...task, ...updates } : task))
       );
 
@@ -70,12 +77,12 @@ export const useTasks = () => {
     onError: (_err, _newTodo, context) => {
       // Rollback if mutation fails
       if (context?.previousTasks) {
-        queryClient.setQueryData(QUERY_KEYS.tasks, context.previousTasks);
+        queryClient.setQueryData(queryKey, context.previousTasks);
       }
     },
     onSettled: () => {
       // Always refetch after error or success to synchronize
-      queryClient.invalidateQueries({ queryKey: QUERY_KEYS.tasks });
+      queryClient.invalidateQueries({ queryKey });
     },
   });
 

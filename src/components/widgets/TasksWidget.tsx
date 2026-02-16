@@ -6,6 +6,7 @@ import { CheckCircle2, Circle, Plus, Loader2 } from 'lucide-react';
 export const TasksWidget: React.FC = () => {
   const { tasks, isLoading, updateTask, createTask } = useTasks();
   const [newTaskTitle, setNewTaskTitle] = React.useState('');
+  const [newPriority, setNewPriority] = React.useState(1);
 
   const handleToggle = (id: string, currentStatus: string) => {
     const newStatus = currentStatus === 'done' ? 'todo' : 'done';
@@ -15,25 +16,46 @@ export const TasksWidget: React.FC = () => {
   const handleAdd = (e: React.FormEvent) => {
     e.preventDefault();
     if (!newTaskTitle.trim()) return;
-    createTask.mutate({ title: newTaskTitle, priority: 1, category: 'General' });
+    createTask.mutate({ title: newTaskTitle, priority: newPriority, category: 'General' });
     setNewTaskTitle('');
+    setNewPriority(1);
   };
 
   return (
-    <WidgetContainer title="Tasks">
-      <div className="flex flex-col h-full max-h-[400px]">
-        {/* Add Task Input */}
-        <form onSubmit={handleAdd} className="mb-4 relative">
-          <input
-            type="text"
-            value={newTaskTitle}
-            onChange={(e) => setNewTaskTitle(e.target.value)}
-            placeholder="Secure new objective..."
-            className="w-full bg-white/5 border border-white/10 rounded-xl py-2 px-4 pr-10 text-sm focus:outline-none focus:border-batcave-blue transition-colors"
-          />
-          <button type="submit" className="absolute right-2 top-1.5 text-gray-500 hover:text-white transition-colors">
-            {createTask.isPending ? <Loader2 className="w-5 h-5 animate-spin" /> : <Plus className="w-5 h-5" />}
-          </button>
+    <WidgetContainer title="Execution Hub">
+      <div className="flex flex-col h-full max-h-[500px]">
+        {/* Add Task Input with Priority Selection */}
+        <form onSubmit={handleAdd} className="mb-6 space-y-3">
+          <div className="relative group">
+            <input
+              type="text"
+              value={newTaskTitle}
+              onChange={(e) => setNewTaskTitle(e.target.value)}
+              placeholder="Deploy new objective..."
+              className="w-full bg-white/5 border border-white/10 rounded-xl py-2.5 px-4 pr-10 text-sm focus:outline-none focus:border-batcave-blue transition-colors"
+            />
+            <button type="submit" className="absolute right-2 top-2 text-batcave-blue hover:text-white transition-colors">
+              {createTask.isPending ? <Loader2 className="w-5 h-5 animate-spin" /> : <Plus className="w-5 h-5" />}
+            </button>
+          </div>
+          
+          <div className="flex items-center gap-3">
+            <span className="text-[9px] uppercase tracking-widest font-bold text-gray-500">Priority Level:</span>
+            {[1, 2, 3, 4].map((p) => (
+              <button
+                key={p}
+                type="button"
+                onClick={() => setNewPriority(p)}
+                className={`w-6 h-6 rounded-md text-[10px] font-bold transition-all border ${
+                  newPriority === p 
+                    ? 'bg-batcave-blue border-batcave-blue text-white shadow-[0_0_10px_rgba(59,130,246,0.5)]' 
+                    : 'bg-white/5 border-white/5 text-gray-500 hover:border-white/10'
+                }`}
+              >
+                {p}
+              </button>
+            ))}
+          </div>
         </form>
 
         {/* Task List */}

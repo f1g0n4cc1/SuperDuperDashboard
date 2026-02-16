@@ -3,6 +3,7 @@ export type TaskStatus = 'todo' | 'in_progress' | 'done';
 export interface Task {
   id: string;
   user_id: string;
+  project_id?: string;
   title: string;
   status: TaskStatus;
   priority: number;
@@ -11,5 +12,5 @@ export interface Task {
   created_at: string;
 }
 
-export type CreateTaskInput = Pick<Task, 'title' | 'priority' | 'category'>;
-export type UpdateTaskInput = Partial<Pick<Task, 'title' | 'status' | 'priority' | 'category'>>;
+export type CreateTaskInput = Pick<Task, 'title' | 'priority' | 'category' | 'project_id'>;
+export type UpdateTaskInput = Partial<Pick<Task, 'title' | 'status' | 'priority' | 'category' | 'project_id'>>;

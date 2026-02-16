@@ -1,19 +1,37 @@
+import { useState } from 'react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { DashboardLayout } from './components/DashboardLayout';
 import { Sidebar } from './components/Sidebar';
 import { WidgetContainer } from './components/WidgetContainer';
 import { TasksWidget } from './components/widgets/TasksWidget';
+import { JournalWidget } from './components/widgets/JournalWidget';
+import { GoalsWidget } from './components/widgets/GoalsWidget';
+import { HabitsWidget } from './components/widgets/HabitsWidget';
+import { ProjectsWidget } from './components/widgets/ProjectsWidget';
+import { NotesWidget } from './components/widgets/NotesWidget';
+import { CalendarWidget } from './components/widgets/CalendarWidget';
+import { SettingsWidget } from './components/widgets/SettingsWidget';
 import { EventBanner } from './components/dashboard/EventBanner';
 import { useViewStore } from './context/viewStore';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { supabase } from './services/supabase';
 import { useUserSettings } from './hooks/useUserSettings';
-import { ChevronLeft, ChevronRight, Loader2 } from 'lucide-react';
+import { useTasks } from './hooks/useTasks';
+import { ChevronLeft, ChevronRight, Loader2, Plus } from 'lucide-react';
 
 const queryClient = new QueryClient();
 
 const DashboardView = () => {
   const { layout, isLoading, updateLayout } = useUserSettings();
+  const { createTask } = useTasks();
+  const [quickTask, setQuickTask] = useState('');
+
+  const handleQuickAdd = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!quickTask.trim()) return;
+    createTask.mutate({ title: quickTask, priority: 1, category: 'General' });
+    setQuickTask('');
+  };
 
   const moveWidget = (index: number, direction: 'left' | 'right') => {
     const newWidgets = [...layout.widgets];
@@ -33,9 +51,24 @@ const DashboardView = () => {
 
   return (
     <div className="animate-fade-in">
-      <header className="mb-10">
-        <h2 className="text-3xl font-bold text-white mb-2 tracking-tight">Welcome back</h2>
-        <p className="text-batcave-text-secondary italic">"The night is darkest just before the dawn."</p>
+      <header className="mb-10 flex flex-col md:flex-row md:items-end justify-between gap-6">
+        <div>
+          <h2 className="text-3xl font-bold text-white mb-2 tracking-tight">Command Center</h2>
+          <p className="text-batcave-text-secondary italic">"Awareness is the first step to control."</p>
+        </div>
+        
+        <form onSubmit={handleQuickAdd} className="w-full md:w-96 relative group">
+          <input
+            type="text"
+            value={quickTask}
+            onChange={(e) => setQuickTask(e.target.value)}
+            placeholder="Initialize new objective..."
+            className="w-full bg-white/5 border border-white/10 rounded-2xl py-3 px-5 pr-12 text-sm focus:outline-none focus:border-batcave-blue focus:ring-4 focus:ring-batcave-blue/10 transition-all placeholder:text-gray-700"
+          />
+          <button type="submit" className="absolute right-3 top-2.5 p-1.5 bg-batcave-blue/20 text-batcave-blue rounded-xl hover:bg-batcave-blue hover:text-white transition-all">
+            {createTask.isPending ? <Loader2 className="w-4 h-4 animate-spin" /> : <Plus className="w-4 h-4" />}
+          </button>
+        </form>
       </header>
 
       <EventBanner />
@@ -77,32 +110,6 @@ const DashboardView = () => {
   );
 };
 
-const LoginView = () => {
-  const handleLogin = async () => {
-    await supabase.auth.signInWithOAuth({
-      provider: 'google',
-      options: { redirectTo: window.location.origin }
-    });
-  };
-
-  return (
-    <div className="h-screen w-full flex items-center justify-center bg-batcave-bg text-white px-6">
-      <div className="glass-panel p-10 rounded-3xl max-w-md w-full text-center">
-        <h1 className="text-3xl font-bold mb-4 tracking-tighter bg-gradient-to-r from-white to-gray-500 bg-clip-text text-transparent">
-          BATCAVE
-        </h1>
-        <p className="text-batcave-text-secondary mb-8">Secure Access Portal for Productivity Optimization.</p>
-        <button 
-          onClick={handleLogin}
-          className="w-full py-4 bg-white text-black font-bold rounded-2xl hover:bg-gray-200 transition-all shadow-[0_0_20px_rgba(255,255,255,0.1)] active:scale-95"
-        >
-          Initialize Google OAuth
-        </button>
-      </div>
-    </div>
-  );
-};
-
 const DashboardContent = () => {
   const { user, loading } = useAuth();
   const { activeView } = useViewStore();
@@ -113,19 +120,29 @@ const DashboardContent = () => {
     </div>
   );
 
-  if (!user) return <LoginView />;
+  if (!user) {
+    // Basic inline login for demo stability
+    const handleLogin = () => supabase.auth.signInWithOAuth({ provider: 'google', options: { redirectTo: window.location.origin } });
+    return (
+      <div className="h-screen w-full flex items-center justify-center bg-batcave-bg text-white px-6">
+        <div className="glass-panel p-10 rounded-3xl max-w-md w-full text-center">
+          <h1 className="text-3xl font-bold mb-4 tracking-tighter bg-gradient-to-r from-white to-gray-500 bg-clip-text text-transparent">BATCAVE</h1>
+          <button onClick={handleLogin} className="w-full py-4 bg-white text-black font-bold rounded-2xl hover:bg-gray-200 transition-all shadow-[0_0_20px_rgba(255,255,255,0.1)]">Sign in with Google</button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <DashboardLayout sidebar={<Sidebar />}>
       {activeView === 'Dashboard' && <DashboardView />}
-      {activeView !== 'Dashboard' && (
-        <div className="animate-fade-in flex flex-col items-center justify-center h-[60vh] text-center">
-          <h2 className="text-4xl font-bold text-white mb-4">{activeView}</h2>
-          <p className="text-batcave-text-secondary max-w-md">
-            This module is currently being initialized. Please check back shortly for full functionality.
-          </p>
-        </div>
-      )}
+      {activeView === 'Calendar' && <CalendarWidget />}
+      {activeView === 'Notes' && <NotesWidget />}
+      {activeView === 'Goal' && <GoalsWidget />}
+      {activeView === 'Projects' && <ProjectsWidget />}
+      {activeView === 'Journal' && <JournalWidget />}
+      {activeView === 'Habits' && <HabitsWidget />}
+      {activeView === 'Settings' && <SettingsWidget />}
     </DashboardLayout>
   );
 };

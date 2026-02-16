@@ -1,6 +1,14 @@
 import { create } from 'zustand';
 
-export type ViewType = 'Dashboard' | 'Tasks' | 'Journal' | 'Stats' | 'Settings';
+export type ViewType = 
+  | 'Dashboard' 
+  | 'Calendar' 
+  | 'Notes' 
+  | 'Goal' 
+  | 'Projects' 
+  | 'Journal' 
+  | 'Habits'
+  | 'Settings'; // Keeping Settings as a utility view
 
 interface ViewState {
   activeView: ViewType;
