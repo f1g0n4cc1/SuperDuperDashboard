@@ -3,6 +3,8 @@
  * In production, this can be swapped with Sentry, LogRocket, or Datadog.
  */
 
+import * as Sentry from "@sentry/react";
+
 type LogLevel = 'info' | 'warn' | 'error' | 'debug';
 
 interface LogDetails {
@@ -17,17 +19,28 @@ export const logger = {
     const timestamp = new Date().toISOString();
     const prefix = `[${timestamp}] [${level.toUpperCase()}]`;
     
-    // Always log to console in development
+    // 1. Development: Always log to console
     if (import.meta.env.DEV) {
       const consoleMethod = level === 'error' ? 'error' : level === 'warn' ? 'warn' : 'log';
       console[consoleMethod](`${prefix} ${message}`, details);
     }
 
-    // In Production, send to external monitoring service
+    // 2. Production: Send critical data to Sentry
     if (import.meta.env.PROD) {
-      // Example: Sentry.captureMessage(message, { level, extra: details });
-      if (level === 'error') {
-        console.error(`${prefix} CRITICAL FAILURE: ${message}`, details);
+      if (level === 'error' || level === 'warn') {
+        Sentry.captureMessage(message, {
+          level: level === 'error' ? 'error' : 'warning',
+          extra: {
+            context: details?.context,
+            metadata: details?.metadata,
+            timestamp
+          },
+          user: details?.user_id ? { id: details.user_id } : undefined,
+        });
+
+        if (details?.error) {
+          Sentry.captureException(details.error);
+        }
       }
     }
   },
