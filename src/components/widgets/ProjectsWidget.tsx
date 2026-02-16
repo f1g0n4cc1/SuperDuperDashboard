@@ -116,9 +116,19 @@ export const ProjectsWidget: React.FC = () => {
                   <h3 className="text-xl font-bold text-white mb-1">
                     {selectedProject ? selectedProject.name : 'Unified Objectives'}
                   </h3>
-                  <p className="text-xs text-batcave-text-secondary uppercase tracking-widest">
-                    {selectedProject ? `Operation Progress: ${Math.round(selectedProject.progress)}%` : 'All Active Missions'}
-                  </p>
+                  <div className="flex items-center gap-4">
+                    <p className="text-xs text-batcave-text-secondary uppercase tracking-widest">
+                      {selectedProject ? `Operation Progress: ${Math.round(selectedProject.progress)}%` : 'All Active Missions'}
+                    </p>
+                    {selectedProject && (
+                      <button 
+                        onClick={(e) => handleDeleteProject(e, selectedProject.id)}
+                        className="text-[10px] text-red-500/50 hover:text-red-500 font-bold uppercase tracking-tighter flex items-center gap-1 transition-colors"
+                      >
+                        <Trash2 className="w-3 h-3" /> Terminate Operation
+                      </button>
+                    )}
+                  </div>
                 </div>
                 {selectedProject && (
                   <div className="h-1.5 w-48 bg-white/5 rounded-full overflow-hidden mt-2">

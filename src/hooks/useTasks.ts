@@ -60,25 +60,30 @@ export const useTasks = (projectId?: string) => {
       await queryClient.cancelQueries({ queryKey });
 
       // Snapshot previous value
-      const previousTasks = queryClient.getQueryData<Task[]>(queryKey);
+      const previousData = queryClient.getQueryData<InfiniteData<Task[], string | undefined>>(queryKey);
 
       // Optimistically update to the new value
-      queryClient.setQueryData<Task[]>(queryKey, (old) =>
-        old?.map((task) => (task.id === id ? { ...task, ...updates } : task))
-      );
+      queryClient.setQueryData<InfiniteData<Task[], string | undefined>>(queryKey, (old) => {
+        if (!old) return old;
+        return {
+          ...old,
+          pages: old.pages.map(page => 
+            page.map(task => task.id === id ? { ...task, ...updates } : task)
+          )
+        };
+      });
 
-      return { previousTasks };
+      return { previousData };
     },
-    onError: (err, _newTodo, context) => {
+    onError: (err, _vars, context) => {
       // Rollback if mutation fails
-      if (context?.previousTasks) {
-        queryClient.setQueryData(queryKey, context.previousTasks);
+      if (context?.previousData) {
+        queryClient.setQueryData(queryKey, context.previousData);
       }
       logger.error('updateTask failed', { error: err, context: 'Optimistic Rollback', user_id: user?.id });
       toast.error('Synchronization failure. Changes reverted.');
     },
     onSettled: () => {
-      // Always refetch after error or success to synchronize
       queryClient.invalidateQueries({ queryKey });
     },
   });

@@ -47,10 +47,29 @@ export const useNotes = () => {
   const updateNote = useMutation({
     mutationFn: ({ id, updates }: { id: string, updates: UpdateNoteInput }) => 
       notesApi.update(id, updates),
+    onMutate: async ({ id, updates }) => {
+      await queryClient.cancelQueries({ queryKey: QUERY_KEY });
+      const previousData = queryClient.getQueryData<InfiniteData<Note[], string | undefined>>(QUERY_KEY);
+
+      queryClient.setQueryData<InfiniteData<Note[], string | undefined>>(QUERY_KEY, (old) => {
+        if (!old) return old;
+        return {
+          ...old,
+          pages: old.pages.map(page => 
+            page.map(note => note.id === id ? { ...note, ...updates } : note)
+          )
+        };
+      });
+
+      return { previousData };
+    },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: QUERY_KEY });
     },
-    onError: (err: Error) => {
+    onError: (err, _vars, context) => {
+      if (context?.previousData) {
+        queryClient.setQueryData(QUERY_KEY, context.previousData);
+      }
       logger.error('updateNote failed', { error: err, user_id: user?.id });
       toast.error('Failed to update note');
     }
