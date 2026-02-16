@@ -18,10 +18,10 @@ export const useNotes = () => {
     isFetchingNextPage 
   } = useInfiniteQuery({
     queryKey: QUERY_KEY,
-    queryFn: ({ pageParam = 0 }) => notesApi.list(pageParam),
-    initialPageParam: 0,
-    getNextPageParam: (lastPage, allPages) => {
-      return lastPage.length < 10 ? undefined : allPages.length;
+    queryFn: ({ pageParam }) => notesApi.list(pageParam as string | undefined),
+    initialPageParam: undefined,
+    getNextPageParam: (lastPage) => {
+      return lastPage.length < 10 ? undefined : lastPage[lastPage.length - 1].created_at;
     },
     enabled: !!user,
   });

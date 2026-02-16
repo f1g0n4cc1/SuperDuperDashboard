@@ -21,10 +21,10 @@ export const useTasks = (projectId?: string) => {
     isFetchingNextPage 
   } = useInfiniteQuery({
     queryKey,
-    queryFn: ({ pageParam = 0 }) => tasksApi.list(projectId, pageParam),
-    initialPageParam: 0,
-    getNextPageParam: (lastPage, allPages) => {
-      return lastPage.length < 20 ? undefined : allPages.length;
+    queryFn: ({ pageParam }) => tasksApi.list(projectId, pageParam as string | undefined),
+    initialPageParam: undefined,
+    getNextPageParam: (lastPage) => {
+      return lastPage.length < 20 ? undefined : lastPage[lastPage.length - 1].created_at;
     },
     enabled: !!user,
   });
