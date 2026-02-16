@@ -12,28 +12,7 @@ export const useProjects = () => {
 
   const { data: projects = [], isLoading } = useQuery({
     queryKey: QUERY_KEY,
-    queryFn: async () => {
-      // 1. Fetch Projects and Tasks in parallel
-      const [projectsData, tasksData] = await Promise.all([
-        projectsApi.list(),
-        tasksApi.list()
-      ]);
-
-      // 2. Aggregate stats
-      return (projectsData as Project[]).map(project => {
-        const projectTasks = (tasksData as Task[]).filter(t => t.project_id === project.id);
-        const totalTasks = projectTasks.length;
-        const completedTasks = projectTasks.filter(t => t.status === 'done').length;
-        const progress = totalTasks > 0 ? (completedTasks / totalTasks) * 100 : 0;
-
-        return {
-          ...project,
-          totalTasks,
-          completedTasks,
-          progress
-        };
-      }) as ProjectWithStats[];
-    },
+    queryFn: () => projectsApi.list(),
     enabled: !!user,
   });
 

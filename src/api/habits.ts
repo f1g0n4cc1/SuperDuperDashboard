@@ -46,5 +46,14 @@ export const habitsApi = {
       .eq('habit_id', habitId)
       .eq('completed_at', completedAt);
     if (error) throw error;
+  },
+
+  async getStats(habitId: string) {
+    const { data, error } = await supabase
+      .rpc('get_habit_stats', { target_habit_id: habitId })
+      .single();
+
+    if (error) throw error;
+    return data;
   }
 };

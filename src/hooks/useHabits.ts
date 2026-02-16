@@ -18,11 +18,19 @@ export const useHabits = () => {
         habitsApi.listLogs()
       ]);
 
-      // 2. Map logs to habits
-      return (habitsData as Habit[]).map(habit => ({
-        ...habit,
-        logs: (logsData as HabitLog[]).filter(log => log.habit_id === habit.id)
-      })) as HabitWithLogs[];
+      // 2. Fetch stats for each habit (to get streaks)
+      const habitsWithStats = await Promise.all(
+        (habitsData as Habit[]).map(async (habit) => {
+          const stats = await habitsApi.getStats(habit.id);
+          return {
+            ...habit,
+            ...stats,
+            logs: (logsData as HabitLog[]).filter(log => log.habit_id === habit.id)
+          };
+        })
+      );
+
+      return habitsWithStats as HabitWithLogs[];
     },
     enabled: !!user,
   });
