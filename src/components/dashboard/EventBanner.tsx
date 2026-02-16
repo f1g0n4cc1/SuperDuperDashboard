@@ -1,9 +1,11 @@
 import React from 'react';
 import { Bell, Clock, ExternalLink, Loader2, Calendar } from 'lucide-react';
 import { useCalendarSync } from '../../hooks/useCalendarSync';
+import { useViewStore } from '../../context/viewStore';
 
 export const EventBanner: React.FC = () => {
   const { events, isLoading } = useCalendarSync();
+  const { setActiveView } = useViewStore();
 
   // Find the next 3 events that haven't ended yet
   const now = new Date();
@@ -63,7 +65,10 @@ export const EventBanner: React.FC = () => {
             Strategic Engagements: Next 72 Hours
           </h4>
         </div>
-        <button className="text-[10px] font-black uppercase text-batcave-blue hover:text-white transition-all tracking-widest">
+        <button 
+          onClick={() => setActiveView('Calendar')}
+          className="text-[10px] font-black uppercase text-batcave-blue hover:text-white transition-all tracking-widest"
+        >
           View Full Agenda
         </button>
       </div>
