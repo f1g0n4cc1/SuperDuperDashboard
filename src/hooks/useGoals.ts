@@ -2,6 +2,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { goalsApi } from '../api/goals';
 import type { Goal, CreateGoalInput, UpdateGoalInput } from '../types/goals';
 import { useAuth } from '../context/AuthContext';
+import { toast } from 'sonner';
 
 export const useGoals = () => {
   const { user } = useAuth();
@@ -16,13 +17,20 @@ export const useGoals = () => {
 
   const createGoal = useMutation({
     mutationFn: (newGoal: CreateGoalInput) => goalsApi.create(newGoal),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: QUERY_KEY }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: QUERY_KEY });
+      toast.success('Objective established');
+    },
+    onError: () => toast.error('Failed to establish objective')
   });
 
   const updateGoal = useMutation({
     mutationFn: ({ id, updates }: { id: string, updates: UpdateGoalInput }) => 
       goalsApi.update(id, updates),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: QUERY_KEY }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: QUERY_KEY });
+    },
+    onError: () => toast.error('Failed to update objective')
   });
 
   return { goals, isLoading, createGoal, updateGoal };

@@ -2,6 +2,7 @@ import { useInfiniteQuery, useMutation, useQueryClient } from '@tanstack/react-q
 import { notesApi } from '../api/notes';
 import type { Note, CreateNoteInput, UpdateNoteInput } from '../types/notes';
 import { useAuth } from '../context/AuthContext';
+import { toast } from 'sonner';
 
 export const useNotes = () => {
   const { user } = useAuth();
@@ -19,7 +20,7 @@ export const useNotes = () => {
     queryFn: ({ pageParam = 0 }) => notesApi.list(pageParam),
     initialPageParam: 0,
     getNextPageParam: (lastPage, allPages) => {
-      return lastPage.length === 10 ? allPages.length : undefined;
+      return lastPage.length < 10 ? undefined : allPages.length;
     },
     enabled: !!user,
   });
@@ -28,18 +29,29 @@ export const useNotes = () => {
 
   const createNote = useMutation({
     mutationFn: (newNote: CreateNoteInput) => notesApi.create(newNote),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: QUERY_KEY }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: QUERY_KEY });
+      toast.success('Note archived');
+    },
+    onError: () => toast.error('Failed to save note')
   });
 
   const updateNote = useMutation({
     mutationFn: ({ id, updates }: { id: string, updates: UpdateNoteInput }) => 
       notesApi.update(id, updates),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: QUERY_KEY }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: QUERY_KEY });
+    },
+    onError: () => toast.error('Failed to update note')
   });
 
   const deleteNote = useMutation({
     mutationFn: (id: string) => notesApi.delete(id),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: QUERY_KEY }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: QUERY_KEY });
+      toast.success('Note deleted');
+    },
+    onError: () => toast.error('Failed to delete note')
   });
 
   return { notes, isLoading, createNote, updateNote, deleteNote };

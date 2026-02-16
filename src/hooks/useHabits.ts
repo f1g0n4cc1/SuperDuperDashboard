@@ -2,6 +2,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { habitsApi } from '../api/habits';
 import type { Habit, HabitLog, HabitWithLogs, CreateHabitInput } from '../types/habits';
 import { useAuth } from '../context/AuthContext';
+import { toast } from 'sonner';
 
 export const useHabits = () => {
   const { user } = useAuth();
@@ -37,7 +38,11 @@ export const useHabits = () => {
 
   const createHabit = useMutation({
     mutationFn: (newHabit: CreateHabitInput) => habitsApi.create(newHabit),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: QUERY_KEY }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: QUERY_KEY });
+      toast.success('Habit initialized');
+    },
+    onError: () => toast.error('Failed to create habit')
   });
 
   const toggleHabit = useMutation({
@@ -72,6 +77,7 @@ export const useHabits = () => {
       if (context?.previousHabits) {
         queryClient.setQueryData(QUERY_KEY, context.previousHabits);
       }
+      toast.error('Sync failure. Habit log reverted.');
     },
     onSettled: () => queryClient.invalidateQueries({ queryKey: QUERY_KEY }),
   });

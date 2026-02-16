@@ -3,6 +3,7 @@ import { tasksApi } from '../api/tasks';
 import { QUERY_KEYS } from '../lib/queryKeys';
 import { type Task, type CreateTaskInput, type UpdateTaskInput } from '../types/tasks';
 import { useAuth } from '../context/AuthContext';
+import { toast } from 'sonner';
 
 export const useTasks = (projectId?: string) => {
   const { user } = useAuth();
@@ -22,7 +23,7 @@ export const useTasks = (projectId?: string) => {
     queryFn: ({ pageParam = 0 }) => tasksApi.list(projectId, pageParam),
     initialPageParam: 0,
     getNextPageParam: (lastPage, allPages) => {
-      return lastPage.length === 20 ? allPages.length : undefined;
+      return lastPage.length < 20 ? undefined : allPages.length;
     },
     enabled: !!user,
   });
@@ -34,7 +35,11 @@ export const useTasks = (projectId?: string) => {
     mutationFn: (newTask: CreateTaskInput) => tasksApi.create(newTask),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: QUERY_KEYS.tasks });
+      toast.success('Objective deployed');
     },
+    onError: () => {
+      toast.error('Failed to deploy objective. System offline?');
+    }
   });
 
   // 3. Update Task (Optimistic UI)
@@ -60,6 +65,7 @@ export const useTasks = (projectId?: string) => {
       if (context?.previousTasks) {
         queryClient.setQueryData(queryKey, context.previousTasks);
       }
+      toast.error('Synchronization failure. Changes reverted.');
     },
     onSettled: () => {
       // Always refetch after error or success to synchronize

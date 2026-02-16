@@ -3,6 +3,7 @@ import { journalApi } from '../api/journal';
 import { QUERY_KEYS } from '../lib/queryKeys';
 import type { JournalEntry, UpdateJournalInput } from '../types/journal';
 import { useAuth } from '../context/AuthContext';
+import { toast } from 'sonner';
 
 export const useJournal = () => {
   const { user } = useAuth();
@@ -22,6 +23,9 @@ export const useJournal = () => {
     onSuccess: (data) => {
       queryClient.setQueryData(QUERY_KEYS.journal, data);
     },
+    onError: () => {
+      toast.error('Failed to autosave journal entry');
+    }
   });
 
   return {

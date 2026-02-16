@@ -4,6 +4,7 @@ import { tasksApi } from '../api/tasks';
 import type { Project, ProjectWithStats, CreateProjectInput } from '../types/projects';
 import type { Task } from '../types/tasks';
 import { useAuth } from '../context/AuthContext';
+import { toast } from 'sonner';
 
 export const useProjects = () => {
   const { user } = useAuth();
@@ -18,7 +19,11 @@ export const useProjects = () => {
 
   const createProject = useMutation({
     mutationFn: (newProject: CreateProjectInput) => projectsApi.create(newProject),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: QUERY_KEY }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: QUERY_KEY });
+      toast.success('Project deployed');
+    },
+    onError: () => toast.error('Failed to deploy project')
   });
 
   return { projects, isLoading, createProject };
