@@ -21,5 +21,13 @@ export const projectsApi = {
 
     if (error) throw error;
     return data as Project;
+  },
+
+  async delete(id: string) {
+    const { error } = await supabase
+      .from('projects')
+      .delete()
+      .eq('id', id);
+    if (error) throw error;
   }
 };

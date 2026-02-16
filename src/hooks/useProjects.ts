@@ -34,5 +34,14 @@ export const useProjects = () => {
     onError: (err: Error) => toast.error(err.message || 'Failed to deploy project')
   });
 
-  return { projects, isLoading, createProject };
+  const deleteProject = useMutation({
+    mutationFn: (id: string) => projectsApi.delete(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: QUERY_KEY });
+      toast.success('Project terminated');
+    },
+    onError: () => toast.error('Failed to terminate project')
+  });
+
+  return { projects, isLoading, createProject, deleteProject };
 };

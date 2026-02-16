@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
 import { useProjects } from '../../hooks/useProjects';
 import { useTasks } from '../../hooks/useTasks';
-import { Layout, Plus, Loader2, Folder, CheckCircle2, Circle } from 'lucide-react';
+import { Layout, Plus, Loader2, Folder, CheckCircle2, Circle, Trash2 } from 'lucide-react';
 import type { Task } from '../../types/tasks';
+import { toast } from 'sonner';
 
 export const ProjectsWidget: React.FC = () => {
-  const { projects, createProject } = useProjects();
+  const { projects, createProject, deleteProject } = useProjects();
   const [selectedProjectId, setSelectedProjectId] = useState<string | null>(null);
   const { tasks, isLoading: tasksLoading, updateTask } = useTasks(selectedProjectId || undefined);
   const [isAddingProject, setIsAddingProject] = useState(false);
@@ -17,6 +18,17 @@ export const ProjectsWidget: React.FC = () => {
     createProject.mutate({ name: projectName, description: '' });
     setProjectName('');
     setIsAddingProject(false);
+  };
+
+  const handleDeleteProject = (e: React.MouseEvent, id: string) => {
+    e.stopPropagation();
+    if (confirm('Terminate this operation? All associated tactical data will be lost.')) {
+      deleteProject.mutate(id, {
+        onSuccess: () => {
+          if (selectedProjectId === id) setSelectedProjectId(null);
+        }
+      });
+    }
   };
 
   const handleToggleTask = (id: string, currentStatus: string) => {
@@ -66,9 +78,15 @@ export const ProjectsWidget: React.FC = () => {
               >
                 <Folder className="w-4 h-4 mr-3" />
                 <span className="font-medium truncate">{project.name}</span>
-                <span className="ml-auto text-[10px] opacity-0 group-hover:opacity-100 transition-opacity">
-                  {Math.round(project.progress)}%
-                </span>
+                <div className="ml-auto flex items-center gap-2">
+                  <span className="text-[10px] opacity-0 group-hover:opacity-100 transition-opacity">
+                    {Math.round(project.progress)}%
+                  </span>
+                  <Trash2 
+                    onClick={(e) => handleDeleteProject(e, project.id)}
+                    className="w-3 h-3 text-gray-700 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-opacity" 
+                  />
+                </div>
               </button>
             ))}
           </div>
