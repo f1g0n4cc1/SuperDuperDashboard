@@ -1,6 +1,6 @@
 import React from 'react';
 import { Home, CheckSquare, Book, Settings, BarChart3 } from 'lucide-react';
-import { useViewStore, ViewType } from '../context/viewStore';
+import { useViewStore, type ViewType } from '../context/viewStore';
 
 export const Sidebar: React.FC = () => {
   const { activeView, setActiveView } = useViewStore();

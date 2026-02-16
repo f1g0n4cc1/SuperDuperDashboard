@@ -2,47 +2,80 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { DashboardLayout } from './components/DashboardLayout';
 import { Sidebar } from './components/Sidebar';
 import { WidgetContainer } from './components/WidgetContainer';
+import { TasksWidget } from './components/widgets/TasksWidget';
+import { EventBanner } from './components/dashboard/EventBanner';
 import { useViewStore } from './context/viewStore';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { supabase } from './services/supabase';
+import { useUserSettings } from './hooks/useUserSettings';
+import { ChevronLeft, ChevronRight, Loader2 } from 'lucide-react';
 
 const queryClient = new QueryClient();
 
-const DashboardView = () => (
-  <div className="animate-fade-in">
-    <header className="mb-10">
-      <h2 className="text-3xl font-bold text-white mb-2 tracking-tight">Welcome back</h2>
-      <p className="text-batcave-text-secondary italic">"The night is darkest just before the dawn."</p>
-    </header>
+const DashboardView = () => {
+  const { layout, isLoading, updateLayout } = useUserSettings();
 
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-      <WidgetContainer title="System Status">
-        <div className="space-y-4">
-          {[1, 2, 3].map((i) => (
-            <div key={i} className="flex items-center p-3 bg-batcave-panel/50 rounded-xl border border-white/5">
-              <div className="w-2 h-2 rounded-full bg-batcave-blue mr-3 shadow-[0_0_8px_#3b82f6]" />
-              <div className="flex-1 h-2 bg-white/5 rounded-full" />
-            </div>
-          ))}
-        </div>
-      </WidgetContainer>
-      
-      <WidgetContainer title="Intelligence Overview">
-        <div className="h-40 flex items-end justify-between gap-1">
-          {[40, 70, 45, 90, 65, 80, 50, 60, 75, 55].map((h, i) => (
-            <div key={i} className="w-full bg-batcave-blue/20 rounded-t-sm hover:bg-batcave-blue/50 transition-all" style={{ height: `${h}%` }} />
-          ))}
-        </div>
-      </WidgetContainer>
+  const moveWidget = (index: number, direction: 'left' | 'right') => {
+    const newWidgets = [...layout.widgets];
+    const targetIndex = direction === 'left' ? index - 1 : index + 1;
+    
+    if (targetIndex < 0 || targetIndex >= newWidgets.length) return;
+    
+    [newWidgets[index], newWidgets[targetIndex]] = [newWidgets[targetIndex], newWidgets[index]];
+    updateLayout.mutate({ widgets: newWidgets });
+  };
 
-      <WidgetContainer title="Quick Actions">
-        <div className="text-batcave-text-secondary text-sm">
-          Initialize secure database connection...
-        </div>
-      </WidgetContainer>
+  if (isLoading) return (
+    <div className="flex items-center justify-center h-40">
+      <Loader2 className="w-8 h-8 animate-spin text-batcave-blue" />
     </div>
-  </div>
-);
+  );
+
+  return (
+    <div className="animate-fade-in">
+      <header className="mb-10">
+        <h2 className="text-3xl font-bold text-white mb-2 tracking-tight">Welcome back</h2>
+        <p className="text-batcave-text-secondary italic">"The night is darkest just before the dawn."</p>
+      </header>
+
+      <EventBanner />
+
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {layout.widgets.map((widget, index) => {
+          const controls = (
+            <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+              <button 
+                onClick={() => moveWidget(index, 'left')}
+                disabled={index === 0}
+                className="p-1 hover:text-white text-gray-600 disabled:opacity-20"
+              >
+                <ChevronLeft className="w-4 h-4" />
+              </button>
+              <button 
+                onClick={() => moveWidget(index, 'right')}
+                disabled={index === layout.widgets.length - 1}
+                className="p-1 hover:text-white text-gray-600 disabled:opacity-20"
+              >
+                <ChevronRight className="w-4 h-4" />
+              </button>
+            </div>
+          );
+
+          if (widget.type === 'tasks') return <TasksWidget key={widget.id} />;
+
+          return (
+            <WidgetContainer key={widget.id} title={widget.title} actions={controls}>
+              <div className="flex flex-col items-center justify-center h-full py-10 border border-dashed border-white/5 rounded-2xl">
+                <p className="text-xs text-batcave-text-secondary uppercase tracking-widest">{widget.type} module</p>
+                <p className="text-[10px] text-gray-600 mt-2">ID: {widget.id}</p>
+              </div>
+            </WidgetContainer>
+          );
+        })}
+      </div>
+    </div>
+  );
+};
 
 const LoginView = () => {
   const handleLogin = async () => {
@@ -75,8 +108,8 @@ const DashboardContent = () => {
   const { activeView } = useViewStore();
 
   if (loading) return (
-    <div className="h-screen w-full flex items-center justify-center bg-batcave-bg">
-      <div className="w-8 h-8 border-2 border-batcave-blue border-t-transparent rounded-full animate-spin" />
+    <div className="h-screen w-full flex items-center justify-center bg-batcave-bg text-batcave-blue">
+      <Loader2 className="w-8 h-8 animate-spin" />
     </div>
   );
 
@@ -85,7 +118,14 @@ const DashboardContent = () => {
   return (
     <DashboardLayout sidebar={<Sidebar />}>
       {activeView === 'Dashboard' && <DashboardView />}
-      {/* Add other views here */}
+      {activeView !== 'Dashboard' && (
+        <div className="animate-fade-in flex flex-col items-center justify-center h-[60vh] text-center">
+          <h2 className="text-4xl font-bold text-white mb-4">{activeView}</h2>
+          <p className="text-batcave-text-secondary max-w-md">
+            This module is currently being initialized. Please check back shortly for full functionality.
+          </p>
+        </div>
+      )}
     </DashboardLayout>
   );
 };
