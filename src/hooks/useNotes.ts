@@ -4,6 +4,7 @@ import { noteSchema } from '../lib/validation';
 import type { Note, CreateNoteInput, UpdateNoteInput } from '../types/notes';
 import { useAuth } from '../context/AuthContext';
 import { toast } from 'sonner';
+import { logger } from '../lib/logger';
 
 export const useNotes = () => {
   const { user } = useAuth();
@@ -40,7 +41,10 @@ export const useNotes = () => {
       queryClient.invalidateQueries({ queryKey: QUERY_KEY });
       toast.success('Note archived');
     },
-    onError: (err: Error) => toast.error(err.message || 'Failed to save note')
+    onError: (err: Error) => {
+      logger.error('createNote failed', { error: err, user_id: user?.id });
+      toast.error(err.message || 'Failed to save note');
+    }
   });
 
   const updateNote = useMutation({
@@ -49,7 +53,10 @@ export const useNotes = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: QUERY_KEY });
     },
-    onError: () => toast.error('Failed to update note')
+    onError: (err: Error) => {
+      logger.error('updateNote failed', { error: err, user_id: user?.id });
+      toast.error('Failed to update note');
+    }
   });
 
   const deleteNote = useMutation({
@@ -58,7 +65,10 @@ export const useNotes = () => {
       queryClient.invalidateQueries({ queryKey: QUERY_KEY });
       toast.success('Note deleted');
     },
-    onError: () => toast.error('Failed to delete note')
+    onError: (err: Error) => {
+      logger.error('deleteNote failed', { error: err, user_id: user?.id });
+      toast.error('Failed to delete note');
+    }
   });
 
   return { notes, isLoading, createNote, updateNote, deleteNote };

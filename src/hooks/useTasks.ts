@@ -5,6 +5,7 @@ import { taskSchema } from '../lib/validation';
 import { type Task, type CreateTaskInput, type UpdateTaskInput } from '../types/tasks';
 import { useAuth } from '../context/AuthContext';
 import { toast } from 'sonner';
+import { logger } from '../lib/logger';
 
 export const useTasks = (projectId?: string) => {
   const { user } = useAuth();
@@ -45,6 +46,7 @@ export const useTasks = (projectId?: string) => {
       toast.success('Objective deployed');
     },
     onError: (err: Error) => {
+      logger.error('createTask failed', { error: err, user_id: user?.id });
       toast.error(err.message || 'Failed to deploy objective');
     }
   });
@@ -67,11 +69,12 @@ export const useTasks = (projectId?: string) => {
 
       return { previousTasks };
     },
-    onError: (_err, _newTodo, context) => {
+    onError: (err, _newTodo, context) => {
       // Rollback if mutation fails
       if (context?.previousTasks) {
         queryClient.setQueryData(queryKey, context.previousTasks);
       }
+      logger.error('updateTask failed', { error: err, context: 'Optimistic Rollback', user_id: user?.id });
       toast.error('Synchronization failure. Changes reverted.');
     },
     onSettled: () => {
