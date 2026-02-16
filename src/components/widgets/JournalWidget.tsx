@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import { useJournal } from '../../hooks/useJournal';
-import { Loader2, CloudCheck, CloudUpload, Smile } from 'lucide-react';
+import { Loader2, CloudCheck, CloudUpload, Smile, ShieldAlert, Lock } from 'lucide-react';
 
 export const JournalWidget: React.FC = () => {
   const { todayEntry, isLoading, updateEntry } = useJournal();
   const [content, setContent] = useState('');
   const [isTyping, setIsTyping] = useState(false);
+  const [hasConsent, setHasConsent] = useState(() => localStorage.getItem('journal-consent') === 'true');
 
   // Sync local state when data loads
   useEffect(() => {
@@ -16,7 +17,7 @@ export const JournalWidget: React.FC = () => {
 
   // Debounce Auto-save
   useEffect(() => {
-    if (!todayEntry || content === todayEntry.content) return;
+    if (!todayEntry || content === todayEntry.content || !hasConsent) return;
 
     setIsTyping(true);
     const timeoutId = setTimeout(() => {
@@ -25,13 +26,50 @@ export const JournalWidget: React.FC = () => {
     }, 1500); // 1.5s debounce
 
     return () => clearTimeout(timeoutId);
-  }, [content, todayEntry, updateEntry]);
+  }, [content, todayEntry, updateEntry, hasConsent]);
+
+  const handleConsent = () => {
+    setHasConsent(true);
+    localStorage.setItem('journal-consent', 'true');
+  };
 
   if (isLoading) return (
     <div className="flex items-center justify-center py-20">
       <Loader2 className="w-8 h-8 animate-spin text-batcave-blue" />
     </div>
   );
+
+  if (!hasConsent) {
+    return (
+      <div className="animate-fade-in max-w-xl mx-auto h-full flex items-center justify-center">
+        <div className="glass-panel p-10 rounded-3xl text-center border border-batcave-blue/20">
+          <div className="w-16 h-16 bg-batcave-blue/10 rounded-2xl flex items-center justify-center mx-auto mb-6">
+            <Lock className="w-8 h-8 text-batcave-blue" />
+          </div>
+          <h2 className="text-2xl font-bold text-white mb-4">Privacy & Data Security</h2>
+          <p className="text-batcave-text-secondary text-sm mb-6 leading-relaxed">
+            Your journal is stored in your private encrypted vault. However, please note:
+          </p>
+          <div className="bg-white/5 p-4 rounded-2xl text-left mb-8 space-y-3">
+            <div className="flex gap-3 text-xs text-gray-400">
+              <ShieldAlert className="w-4 h-4 text-orange-500 shrink-0" />
+              <span>This is not a medical device. Do not store sensitive health or medical information here.</span>
+            </div>
+            <div className="flex gap-3 text-xs text-gray-400">
+              <Lock className="w-4 h-4 text-batcave-blue shrink-0" />
+              <span>Data is encrypted at rest but accessible to your authenticated session.</span>
+            </div>
+          </div>
+          <button 
+            onClick={handleConsent}
+            className="w-full py-4 bg-batcave-blue text-white font-bold rounded-2xl hover:bg-blue-600 transition-all shadow-[0_0_20px_rgba(59,130,246,0.3)]"
+          >
+            I Understand, Initialize Journal
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="animate-fade-in max-w-4xl mx-auto h-full flex flex-col">
@@ -80,6 +118,9 @@ export const JournalWidget: React.FC = () => {
           Encrypted-Session-Alpha-9
         </div>
       </div>
+      <p className="mt-4 text-[9px] text-gray-600 text-center uppercase tracking-widest">
+        Disclaimer: Not a medical tool. Use for personal productivity tracking only.
+      </p>
     </div>
   );
 };
