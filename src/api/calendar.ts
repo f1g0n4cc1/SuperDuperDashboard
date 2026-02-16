@@ -21,5 +21,13 @@ export const calendarApi = {
 
     if (error) throw error;
     return data as CalendarEvent;
+  },
+
+  async delete(id: string) {
+    const { error } = await supabase
+      .from('calendar_events')
+      .delete()
+      .eq('id', id);
+    if (error) throw error;
   }
 };

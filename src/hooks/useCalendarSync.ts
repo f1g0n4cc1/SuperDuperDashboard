@@ -3,6 +3,7 @@ import { calendarApi } from '../api/calendar';
 import type { CreateCalendarEventInput } from '../types/calendar';
 import { useAuth } from '../context/AuthContext';
 import { useCalendar } from './useCalendar';
+import { toast } from 'sonner';
 
 export const useCalendarSync = () => {
   const { user } = useAuth();
@@ -18,7 +19,20 @@ export const useCalendarSync = () => {
 
   const createEvent = useMutation({
     mutationFn: (newEvent: CreateCalendarEventInput) => calendarApi.create(newEvent),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: QUERY_KEY }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: QUERY_KEY });
+      toast.success('Event scheduled');
+    },
+    onError: () => toast.error('Failed to schedule event')
+  });
+
+  const deleteEvent = useMutation({
+    mutationFn: (id: string) => calendarApi.delete(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: QUERY_KEY });
+      toast.success('Event cancelled');
+    },
+    onError: () => toast.error('Failed to cancel event')
   });
 
   // Merge local and google events
@@ -40,6 +54,7 @@ export const useCalendarSync = () => {
   return { 
     events: allEvents, 
     isLoading: localLoading || googleLoading, 
-    createEvent 
+    createEvent,
+    deleteEvent
   };
 };

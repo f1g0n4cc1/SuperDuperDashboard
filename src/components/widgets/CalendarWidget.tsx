@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
 import { useCalendarSync } from '../../hooks/useCalendarSync';
-import { Calendar as CalendarIcon, Clock, Loader2, ExternalLink, Plus, X } from 'lucide-react';
+import { Calendar as CalendarIcon, Clock, Loader2, ExternalLink, Plus, X, Trash2 } from 'lucide-react';
 import { toast } from 'sonner';
 
 export const CalendarWidget: React.FC = () => {
-  const { events, isLoading, createEvent } = useCalendarSync();
+  const { events, isLoading, createEvent, deleteEvent } = useCalendarSync();
   const [isAdding, setIsAdding] = useState(false);
   const [newEvent, setNewEvent] = useState({
     title: '',
@@ -41,6 +41,12 @@ export const CalendarWidget: React.FC = () => {
         toast.error('Failed to schedule engagement');
       }
     });
+  };
+
+  const handleCancelEvent = (id: string) => {
+    if (confirm('Abort this engagement? All tactical data for this slot will be purged.')) {
+      deleteEvent.mutate(id);
+    }
   };
 
   return (
@@ -138,13 +144,13 @@ export const CalendarWidget: React.FC = () => {
                       </span>
                     </div>
                     
-                    <div className="flex-1">
+                    <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2 mb-1">
-                        <h3 className="text-lg font-bold text-white group-hover:text-batcave-blue transition-colors">
+                        <h3 className="text-lg font-bold text-white group-hover:text-batcave-blue transition-colors truncate">
                           {event.title}
                         </h3>
                         {event.is_external && (
-                          <span className="px-2 py-0.5 bg-batcave-blue/10 text-batcave-blue text-[8px] font-black uppercase rounded-md tracking-tighter">Google Sync</span>
+                          <span className="px-2 py-0.5 bg-batcave-blue/10 text-batcave-blue text-[8px] font-black uppercase rounded-md tracking-tighter shrink-0">Google Sync</span>
                         )}
                       </div>
                       <div className="flex items-center gap-4 text-xs text-batcave-text-secondary">
@@ -158,9 +164,19 @@ export const CalendarWidget: React.FC = () => {
                       )}
                     </div>
 
-                    {event.is_external && (
-                      <ExternalLink className="w-4 h-4 text-gray-800 hover:text-white transition-colors cursor-pointer" />
-                    )}
+                    <div className="flex items-center gap-3 opacity-0 group-hover:opacity-100 transition-opacity">
+                      {!event.is_external && (
+                        <button 
+                          onClick={() => handleCancelEvent(event.id)}
+                          className="p-2 text-gray-700 hover:text-red-500 transition-colors"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </button>
+                      )}
+                      {event.is_external && (
+                        <ExternalLink className="w-4 h-4 text-gray-800 hover:text-white transition-colors cursor-pointer" />
+                      )}
+                    </div>
                   </div>
                 ))}
               </div>
