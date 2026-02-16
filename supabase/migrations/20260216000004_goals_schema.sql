@@ -14,4 +14,5 @@ CREATE TABLE IF NOT EXISTS public.goals (
 ALTER TABLE public.goals ENABLE ROW LEVEL SECURITY;
 
 -- RLS Policies
+DROP POLICY IF EXISTS "Users can only access their own goals" ON public.goals;
 CREATE POLICY "Users can only access their own goals" ON public.goals FOR ALL USING (auth.uid() = user_id);

@@ -22,8 +22,10 @@ ALTER TABLE public.habits ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.habit_logs ENABLE ROW LEVEL SECURITY;
 
 -- RLS Policies
+DROP POLICY IF EXISTS "Users can only access their own habits" ON public.habits;
 CREATE POLICY "Users can only access their own habits" ON public.habits FOR ALL USING (auth.uid() = user_id);
 
+DROP POLICY IF EXISTS "Users can only access their own habit logs" ON public.habit_logs;
 CREATE POLICY "Users can only access their own habit logs" 
 ON public.habit_logs FOR ALL 
 USING (

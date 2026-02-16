@@ -15,4 +15,5 @@ ALTER TABLE public.tasks ADD COLUMN IF NOT EXISTS project_id UUID REFERENCES pub
 ALTER TABLE public.projects ENABLE ROW LEVEL SECURITY;
 
 -- RLS Policies
+DROP POLICY IF EXISTS "Users can only access their own projects" ON public.projects;
 CREATE POLICY "Users can only access their own projects" ON public.projects FOR ALL USING (auth.uid() = user_id);

@@ -43,12 +43,16 @@ ALTER TABLE public.journal_entries ENABLE ROW LEVEL SECURITY;
 
 -- 6. Define Global RLS Policies (The "Stay In Your Lane" Rule)
 -- Profiles
+DROP POLICY IF EXISTS "Users can only access their own profile" ON public.profiles;
 CREATE POLICY "Users can only access their own profile" ON public.profiles FOR ALL USING (auth.uid() = id);
 -- User Settings
+DROP POLICY IF EXISTS "Users can only access their own settings" ON public.user_settings;
 CREATE POLICY "Users can only access their own settings" ON public.user_settings FOR ALL USING (auth.uid() = user_id);
 -- Tasks
+DROP POLICY IF EXISTS "Users can only access their own tasks" ON public.tasks;
 CREATE POLICY "Users can only access their own tasks" ON public.tasks FOR ALL USING (auth.uid() = user_id);
 -- Journal
+DROP POLICY IF EXISTS "Users can only access their own journal" ON public.journal_entries;
 CREATE POLICY "Users can only access their own journal" ON public.journal_entries FOR ALL USING (auth.uid() = user_id);
 
 -- 7. The Profile Creation Trigger

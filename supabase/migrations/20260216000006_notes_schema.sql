@@ -13,4 +13,5 @@ CREATE TABLE IF NOT EXISTS public.notes (
 ALTER TABLE public.notes ENABLE ROW LEVEL SECURITY;
 
 -- RLS Policies
+DROP POLICY IF EXISTS "Users can only access their own notes" ON public.notes;
 CREATE POLICY "Users can only access their own notes" ON public.notes FOR ALL USING (auth.uid() = user_id);

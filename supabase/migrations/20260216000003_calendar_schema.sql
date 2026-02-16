@@ -15,4 +15,5 @@ CREATE TABLE IF NOT EXISTS public.calendar_events (
 ALTER TABLE public.calendar_events ENABLE ROW LEVEL SECURITY;
 
 -- RLS Policies
+DROP POLICY IF EXISTS "Users can only access their own calendar events" ON public.calendar_events;
 CREATE POLICY "Users can only access their own calendar events" ON public.calendar_events FOR ALL USING (auth.uid() = user_id);
