@@ -12,8 +12,8 @@ export const journalApi = {
   },
 
   async update(id: string, updates: UpdateJournalInput) {
-    const { data, error } = await supabase
-      .from('journal_entries')
+    const { data, error } = await (supabase
+      .from('journal_entries') as any)
       .update(updates as any)
       .eq('id', id)
       .select()

@@ -1,6 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { calendarApi } from '../api/calendar';
-import type { CalendarEvent, CreateCalendarEventInput } from '../types/calendar';
+import type { CreateCalendarEventInput } from '../types/calendar';
 import { useAuth } from '../context/AuthContext';
 import { useCalendar } from './useCalendar';
 

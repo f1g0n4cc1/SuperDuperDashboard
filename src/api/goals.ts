@@ -24,8 +24,8 @@ export const goalsApi = {
   },
 
   async update(id: string, updates: UpdateGoalInput) {
-    const { data, error } = await supabase
-      .from('goals')
+    const { data, error } = await (supabase
+      .from('goals') as any)
       .update(updates as any)
       .eq('id', id)
       .select()

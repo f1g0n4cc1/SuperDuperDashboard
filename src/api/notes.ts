@@ -30,8 +30,8 @@ export const notesApi = {
   },
 
   async update(id: string, updates: UpdateNoteInput) {
-    const { data, error } = await supabase
-      .from('notes')
+    const { data, error } = await (supabase
+      .from('notes') as any)
       .update({ ...updates, updated_at: new Date().toISOString() } as any)
       .eq('id', id)
       .select()

@@ -13,10 +13,7 @@ export const useNotes = () => {
 
   const { 
     data, 
-    isLoading,
-    fetchNextPage,
-    hasNextPage,
-    isFetchingNextPage 
+    isLoading
   } = useInfiniteQuery<Note[], Error, InfiniteData<Note[], string | undefined>, string[], string | undefined>({
     queryKey: QUERY_KEY,
     queryFn: ({ pageParam }) => notesApi.list(pageParam),

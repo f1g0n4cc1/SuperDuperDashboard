@@ -1,5 +1,8 @@
+import React, { useState } from 'react';
+import { useProjects } from '../../hooks/useProjects';
+import { useTasks } from '../../hooks/useTasks';
+import { Layout, Plus, Loader2, Folder, CheckCircle2, Circle } from 'lucide-react';
 import type { Task } from '../../types/tasks';
-import type { Project } from '../../types/projects';
 
 export const ProjectsWidget: React.FC = () => {
   const { projects, createProject } = useProjects();

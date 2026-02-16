@@ -37,8 +37,8 @@ export const habitsApi = {
   },
 
   async addLog(habitId: string, completedAt: string) {
-    const { error } = await supabase
-      .from('habit_logs')
+    const { error } = await (supabase
+      .from('habit_logs') as any)
       .insert([{ habit_id: habitId, completed_at: completedAt } as any]);
     if (error) throw error;
   },

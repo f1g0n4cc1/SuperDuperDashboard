@@ -34,8 +34,8 @@ export const tasksApi = {
   },
 
   async update(id: string, updates: UpdateTaskInput) {
-    const { data, error } = await supabase
-      .from('tasks')
+    const { data, error } = await (supabase
+      .from('tasks') as any)
       .update(updates as any)
       .eq('id', id)
       .select()

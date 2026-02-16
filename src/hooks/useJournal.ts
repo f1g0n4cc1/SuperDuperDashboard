@@ -2,7 +2,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { journalApi } from '../api/journal';
 import { QUERY_KEYS } from '../lib/queryKeys';
 import { journalSchema } from '../lib/validation';
-import type { JournalEntry, UpdateJournalInput } from '../types/journal';
+import type { UpdateJournalInput } from '../types/journal';
 import { useAuth } from '../context/AuthContext';
 import { toast } from 'sonner';
 

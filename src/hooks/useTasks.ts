@@ -10,17 +10,14 @@ import { logger } from '../lib/logger';
 export const useTasks = (projectId?: string) => {
   const { user } = useAuth();
   const queryClient = useQueryClient();
-  const queryKey = projectId ? [...QUERY_KEYS.tasks, { projectId }] : QUERY_KEYS.tasks;
+  const queryKey = projectId ? (['tasks', { projectId }] as const) : (['tasks'] as const);
 
   // 1. Fetch Tasks (Infinite Scroll Support)
   const { 
     data, 
     isLoading, 
-    error,
-    fetchNextPage,
-    hasNextPage,
-    isFetchingNextPage 
-  } = useInfiniteQuery<Task[], Error, InfiniteData<Task[], string | undefined>, any[], string | undefined>({
+    error
+  } = useInfiniteQuery<Task[], Error, InfiniteData<Task[], string | undefined>, any, string | undefined>({
     queryKey,
     queryFn: ({ pageParam }) => tasksApi.list(projectId, pageParam),
     initialPageParam: undefined,
