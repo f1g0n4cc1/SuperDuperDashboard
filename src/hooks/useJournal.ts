@@ -25,7 +25,7 @@ export const useJournal = () => {
         // Create initial entry for today if none exists
         const { data: newEntry, error: createError } = await supabase
           .from('journal_entries')
-          .insert([{ user_id: user?.id, content: '', mood: 5 }])
+          .insert([{ content: '', mood: 5 }])
           .select()
           .single();
           

@@ -26,7 +26,7 @@ export const useGoals = () => {
     mutationFn: async (newGoal: CreateGoalInput) => {
       const { data, error } = await supabase
         .from('goals')
-        .insert([{ ...newGoal, user_id: user?.id }])
+        .insert([newGoal])
         .select()
         .single();
 

@@ -49,7 +49,7 @@ export const useProjects = () => {
     mutationFn: async (newProject: CreateProjectInput) => {
       const { data, error } = await supabase
         .from('projects')
-        .insert([{ ...newProject, user_id: user?.id }])
+        .insert([newProject])
         .select()
         .single();
 

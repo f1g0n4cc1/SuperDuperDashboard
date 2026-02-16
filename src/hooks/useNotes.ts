@@ -26,7 +26,7 @@ export const useNotes = () => {
     mutationFn: async (newNote: CreateNoteInput) => {
       const { data, error } = await supabase
         .from('notes')
-        .insert([{ ...newNote, user_id: user?.id }])
+        .insert([newNote])
         .select()
         .single();
 

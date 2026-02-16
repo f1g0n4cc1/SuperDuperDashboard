@@ -40,7 +40,7 @@ export const useHabits = () => {
     mutationFn: async (newHabit: CreateHabitInput) => {
       const { data, error } = await supabase
         .from('habits')
-        .insert([{ ...newHabit, user_id: user?.id }])
+        .insert([newHabit])
         .select()
         .single();
 

@@ -35,7 +35,7 @@ export const useTasks = (projectId?: string) => {
     mutationFn: async (newTask: CreateTaskInput) => {
       const { data, error } = await supabase
         .from('tasks')
-        .insert([{ ...newTask, user_id: user?.id }])
+        .insert([newTask])
         .select()
         .single();
 
