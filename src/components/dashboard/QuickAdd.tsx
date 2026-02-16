@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useTasks } from '../hooks/useTasks';
+import { useTasks } from '../../hooks/useTasks';
 import { Plus, Loader2 } from 'lucide-react';
 
 export const QuickAdd: React.FC = () => {

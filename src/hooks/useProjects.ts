@@ -1,9 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { projectsApi } from '../api/projects';
-import { tasksApi } from '../api/tasks';
 import { projectSchema } from '../lib/validation';
-import type { Project, ProjectWithStats, CreateProjectInput } from '../types/projects';
-import type { Task } from '../types/tasks';
+import type { CreateProjectInput } from '../types/projects';
 import { useAuth } from '../context/AuthContext';
 import { toast } from 'sonner';
 
@@ -22,9 +20,12 @@ export const useProjects = () => {
     mutationFn: (newProject: CreateProjectInput) => {
       const validated = projectSchema.safeParse(newProject);
       if (!validated.success) {
-        throw new Error(validated.error.errors[0].message);
+        throw new Error(validated.error.issues[0].message);
       }
-      return projectsApi.create(validated.data);
+      return projectsApi.create({
+        ...validated.data,
+        description: validated.data.description ?? undefined
+      } as CreateProjectInput);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: QUERY_KEY });

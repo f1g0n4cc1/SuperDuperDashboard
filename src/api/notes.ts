@@ -21,7 +21,7 @@ export const notesApi = {
   async create(note: CreateNoteInput) {
     const { data, error } = await supabase
       .from('notes')
-      .insert([note])
+      .insert([note] as any)
       .select()
       .single();
 
@@ -32,7 +32,7 @@ export const notesApi = {
   async update(id: string, updates: UpdateNoteInput) {
     const { data, error } = await supabase
       .from('notes')
-      .update({ ...updates, updated_at: new Date().toISOString() })
+      .update({ ...updates, updated_at: new Date().toISOString() } as any)
       .eq('id', id)
       .select()
       .single();

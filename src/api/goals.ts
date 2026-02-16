@@ -15,7 +15,7 @@ export const goalsApi = {
   async create(goal: CreateGoalInput) {
     const { data, error } = await supabase
       .from('goals')
-      .insert([goal])
+      .insert([goal] as any)
       .select()
       .single();
 
@@ -26,7 +26,7 @@ export const goalsApi = {
   async update(id: string, updates: UpdateGoalInput) {
     const { data, error } = await supabase
       .from('goals')
-      .update(updates)
+      .update(updates as any)
       .eq('id', id)
       .select()
       .single();

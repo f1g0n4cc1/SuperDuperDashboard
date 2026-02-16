@@ -1,7 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { goalsApi } from '../api/goals';
-import { projectSchema } from '../lib/validation'; // Using projectSchema as a base or define goalSchema
-import type { Goal, CreateGoalInput, UpdateGoalInput } from '../types/goals';
+import type { CreateGoalInput, UpdateGoalInput } from '../types/goals';
 import { useAuth } from '../context/AuthContext';
 import { toast } from 'sonner';
 

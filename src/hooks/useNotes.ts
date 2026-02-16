@@ -1,4 +1,4 @@
-import { useInfiniteQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useInfiniteQuery, useMutation, useQueryClient, type InfiniteData } from '@tanstack/react-query';
 import { notesApi } from '../api/notes';
 import { noteSchema } from '../lib/validation';
 import type { Note, CreateNoteInput, UpdateNoteInput } from '../types/notes';
@@ -17,9 +17,9 @@ export const useNotes = () => {
     fetchNextPage,
     hasNextPage,
     isFetchingNextPage 
-  } = useInfiniteQuery({
+  } = useInfiniteQuery<Note[], Error, InfiniteData<Note[], string | undefined>, string[], string | undefined>({
     queryKey: QUERY_KEY,
-    queryFn: ({ pageParam }) => notesApi.list(pageParam as string | undefined),
+    queryFn: ({ pageParam }) => notesApi.list(pageParam),
     initialPageParam: undefined,
     getNextPageParam: (lastPage) => {
       return lastPage.length < 10 ? undefined : lastPage[lastPage.length - 1].created_at;
@@ -33,7 +33,7 @@ export const useNotes = () => {
     mutationFn: (newNote: CreateNoteInput) => {
       const validated = noteSchema.safeParse(newNote);
       if (!validated.success) {
-        throw new Error(validated.error.errors[0].message);
+        throw new Error(validated.error.issues[0].message);
       }
       return notesApi.create(validated.data);
     },

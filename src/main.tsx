@@ -24,7 +24,7 @@ if (import.meta.env.PROD && import.meta.env.VITE_SENTRY_DSN) {
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
-      retry: (failureCount, error: any) => {
+      retry: (failureCount, _error: any) => {
         // Only retry if it's a network error or a transient server error
         if (failureCount < 3) return true;
         return false;

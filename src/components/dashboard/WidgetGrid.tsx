@@ -1,13 +1,13 @@
 import React from 'react';
 import { WidgetContainer } from '../WidgetContainer';
-import { TasksWidget } from './TasksWidget';
-import { JournalWidget } from './JournalWidget';
-import { GoalsWidget } from './GoalsWidget';
-import { HabitsWidget } from './HabitsWidget';
-import { ProjectsWidget } from './ProjectsWidget';
-import { NotesWidget } from './NotesWidget';
-import { CalendarWidget } from './CalendarWidget';
-import { SettingsWidget } from './SettingsWidget';
+import { TasksWidget } from '../widgets/TasksWidget';
+import { JournalWidget } from '../widgets/JournalWidget';
+import { GoalsWidget } from '../widgets/GoalsWidget';
+import { HabitsWidget } from '../widgets/HabitsWidget';
+import { ProjectsWidget } from '../widgets/ProjectsWidget';
+import { NotesWidget } from '../widgets/NotesWidget';
+import { CalendarWidget } from '../widgets/CalendarWidget';
+import { SettingsWidget } from '../widgets/SettingsWidget';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { type DashboardLayout as LayoutType } from '../../types/settings';
 

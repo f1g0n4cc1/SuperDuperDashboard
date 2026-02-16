@@ -1,4 +1,4 @@
-import { useInfiniteQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useInfiniteQuery, useMutation, useQueryClient, type InfiniteData } from '@tanstack/react-query';
 import { tasksApi } from '../api/tasks';
 import { QUERY_KEYS } from '../lib/queryKeys';
 import { taskSchema } from '../lib/validation';
@@ -20,9 +20,9 @@ export const useTasks = (projectId?: string) => {
     fetchNextPage,
     hasNextPage,
     isFetchingNextPage 
-  } = useInfiniteQuery({
+  } = useInfiniteQuery<Task[], Error, InfiniteData<Task[], string | undefined>, any[], string | undefined>({
     queryKey,
-    queryFn: ({ pageParam }) => tasksApi.list(projectId, pageParam as string | undefined),
+    queryFn: ({ pageParam }) => tasksApi.list(projectId, pageParam),
     initialPageParam: undefined,
     getNextPageParam: (lastPage) => {
       return lastPage.length < 20 ? undefined : lastPage[lastPage.length - 1].created_at;
@@ -37,9 +37,12 @@ export const useTasks = (projectId?: string) => {
     mutationFn: (newTask: CreateTaskInput) => {
       const validated = taskSchema.safeParse(newTask);
       if (!validated.success) {
-        throw new Error(validated.error.errors[0].message);
+        throw new Error(validated.error.issues[0].message);
       }
-      return tasksApi.create(validated.data);
+      return tasksApi.create({
+        ...validated.data,
+        project_id: validated.data.project_id ?? undefined
+      } as CreateTaskInput);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: QUERY_KEYS.tasks });

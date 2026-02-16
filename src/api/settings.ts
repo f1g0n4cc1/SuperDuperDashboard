@@ -18,7 +18,7 @@ export const settingsApi = {
       .upsert({ 
         dashboard_layout: layout,
         updated_at: new Date().toISOString() 
-      })
+      } as any)
       .select()
       .single();
 

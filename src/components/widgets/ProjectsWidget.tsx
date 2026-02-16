@@ -1,7 +1,5 @@
-import React, { useState } from 'react';
-import { useProjects } from '../../hooks/useProjects';
-import { useTasks } from '../../hooks/useTasks';
-import { Layout, Plus, Loader2, Folder, CheckCircle2, Circle } from 'lucide-react';
+import type { Task } from '../../types/tasks';
+import type { Project } from '../../types/projects';
 
 export const ProjectsWidget: React.FC = () => {
   const { projects, createProject } = useProjects();
@@ -23,7 +21,7 @@ export const ProjectsWidget: React.FC = () => {
     updateTask.mutate({ id, updates: { status: newStatus } });
   };
 
-  const selectedProject = projects.find(p => p.id === selectedProjectId);
+  const selectedProject = (projects as any[]).find(p => p.id === selectedProjectId);
 
   return (
     <div className="animate-fade-in max-w-6xl mx-auto h-[70vh] flex flex-col">
@@ -55,7 +53,7 @@ export const ProjectsWidget: React.FC = () => {
               <span className="font-medium">All Objectives</span>
             </button>
 
-            {projects.map(project => (
+            {(projects as any[]).map(project => (
               <button 
                 key={project.id}
                 onClick={() => setSelectedProjectId(project.id)}
@@ -116,15 +114,15 @@ export const ProjectsWidget: React.FC = () => {
                   <div className="flex items-center justify-center py-20">
                     <Loader2 className="w-8 h-8 animate-spin text-batcave-blue" />
                   </div>
-                ) : tasks.length === 0 ? (
+                ) : (tasks as Task[]).length === 0 ? (
                   <div className="text-center py-20 border border-dashed border-white/5 rounded-3xl">
                     <p className="text-batcave-text-secondary text-sm italic">No missions assigned to this operation.</p>
                   </div>
                 ) : (
-                  tasks.map(task => (
+                  (tasks as Task[]).map(task => (
                     <div 
                       key={task.id}
-                      onClick={() => handleToggleTask(task.id, task.status)}
+                      onClick={() => handleToggleTask(task.id, task.status || '')}
                       className={`flex items-center p-4 rounded-2xl border transition-all cursor-pointer group ${
                         task.status === 'done' 
                           ? 'bg-white/2 border-transparent opacity-50' 

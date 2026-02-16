@@ -13,7 +13,7 @@ describe('taskSchema validation', () => {
     const result = taskSchema.safeParse(input);
     expect(result.success).toBe(false);
     if (!result.success) {
-      expect(result.error.errors[0].message).toBe('Title is required');
+      expect(result.error.issues[0].message).toBe('Title is required');
     }
   });
 
@@ -22,7 +22,7 @@ describe('taskSchema validation', () => {
     const result = taskSchema.safeParse(input);
     expect(result.success).toBe(false);
     if (!result.success) {
-      expect(result.error.errors[0].message).toBe('Title too long (max 255)');
+      expect(result.error.issues[0].message).toBe('Title too long (max 255)');
     }
   });
 

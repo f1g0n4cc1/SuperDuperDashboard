@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNotes } from '../../hooks/useNotes';
 import { FileText, Plus, Loader2, Search, Trash2, CloudCheck, CloudUpload } from 'lucide-react';
+import type { Note } from '../../types/notes';
 
 export const NotesWidget: React.FC = () => {
   const { notes, isLoading, createNote, updateNote, deleteNote } = useNotes();
@@ -10,7 +11,7 @@ export const NotesWidget: React.FC = () => {
   const [isTyping, setIsTyping] = useState(false);
   const [search, setSearch] = useState('');
 
-  const currentNote = notes.find(n => n.id === selectedNoteId);
+  const currentNote = (notes as Note[]).find(n => n.id === selectedNoteId);
 
   // Sync local state when note selection changes
   useEffect(() => {
@@ -42,9 +43,9 @@ export const NotesWidget: React.FC = () => {
     });
   };
 
-  const filteredNotes = notes.filter(n => 
+  const filteredNotes = (notes as Note[]).filter(n => 
     n.title.toLowerCase().includes(search.toLowerCase()) || 
-    n.content.toLowerCase().includes(search.toLowerCase())
+    n.content?.toLowerCase().includes(search.toLowerCase())
   );
 
   return (

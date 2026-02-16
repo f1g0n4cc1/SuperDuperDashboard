@@ -15,7 +15,7 @@ export const projectsApi = {
   async create(project: CreateProjectInput) {
     const { data, error } = await supabase
       .from('projects')
-      .insert([project])
+      .insert([project] as any)
       .select()
       .single();
 

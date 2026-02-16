@@ -23,10 +23,12 @@ export const useHabits = () => {
       // 2. Fetch stats for each habit (to get streaks)
       const habitsWithStats = await Promise.all(
         (habitsData as Habit[]).map(async (habit) => {
-          const stats = await habitsApi.getStats(habit.id);
+          const stats = await habitsApi.getStats(habit.id) as any;
           return {
             ...habit,
-            ...stats,
+            current_streak: stats?.current_streak ?? 0,
+            total_completions: stats?.total_completions ?? 0,
+            last_completed_at: stats?.last_completed_at ?? null,
             logs: (logsData as HabitLog[]).filter(log => log.habit_id === habit.id)
           };
         })
@@ -41,9 +43,12 @@ export const useHabits = () => {
     mutationFn: (newHabit: CreateHabitInput) => {
       const validated = habitSchema.safeParse(newHabit);
       if (!validated.success) {
-        throw new Error(validated.error.errors[0].message);
+        throw new Error(validated.error.issues[0].message);
       }
-      return habitsApi.create(validated.data);
+      return habitsApi.create({
+        ...validated.data,
+        color: validated.data.color ?? undefined
+      } as CreateHabitInput);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: QUERY_KEY });

@@ -1,6 +1,5 @@
 import { DashboardLayout } from './components/DashboardLayout';
 import { Sidebar } from './components/Sidebar';
-import { TasksWidget } from './components/widgets/TasksWidget';
 import { JournalWidget } from './components/widgets/JournalWidget';
 import { GoalsWidget } from './components/widgets/GoalsWidget';
 import { HabitsWidget } from './components/widgets/HabitsWidget';

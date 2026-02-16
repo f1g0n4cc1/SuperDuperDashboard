@@ -28,7 +28,7 @@ export const habitsApi = {
   async create(habit: CreateHabitInput) {
     const { data, error } = await supabase
       .from('habits')
-      .insert([habit])
+      .insert([habit] as any)
       .select()
       .single();
 
@@ -39,7 +39,7 @@ export const habitsApi = {
   async addLog(habitId: string, completedAt: string) {
     const { error } = await supabase
       .from('habit_logs')
-      .insert([{ habit_id: habitId, completed_at: completedAt }]);
+      .insert([{ habit_id: habitId, completed_at: completedAt } as any]);
     if (error) throw error;
   },
 
@@ -54,7 +54,7 @@ export const habitsApi = {
 
   async getStats(habitId: string) {
     const { data, error } = await supabase
-      .rpc('get_habit_stats', { target_habit_id: habitId })
+      .rpc('get_habit_stats', { target_habit_id: habitId } as any)
       .single();
 
     if (error) throw error;

@@ -15,7 +15,7 @@ export const calendarApi = {
   async create(event: CreateCalendarEventInput) {
     const { data, error } = await supabase
       .from('calendar_events')
-      .insert([event])
+      .insert([event] as any)
       .select()
       .single();
 

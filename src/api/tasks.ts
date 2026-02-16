@@ -25,7 +25,7 @@ export const tasksApi = {
   async create(task: CreateTaskInput) {
     const { data, error } = await supabase
       .from('tasks')
-      .insert([task])
+      .insert(task as any)
       .select()
       .single();
 
@@ -36,7 +36,7 @@ export const tasksApi = {
   async update(id: string, updates: UpdateTaskInput) {
     const { data, error } = await supabase
       .from('tasks')
-      .update(updates)
+      .update(updates as any)
       .eq('id', id)
       .select()
       .single();

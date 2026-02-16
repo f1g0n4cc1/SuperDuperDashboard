@@ -22,7 +22,7 @@ export const useJournal = () => {
     mutationFn: ({ id, updates }: { id: string; updates: UpdateJournalInput }) => {
       const validated = journalSchema.partial().safeParse(updates);
       if (!validated.success) {
-        throw new Error(validated.error.errors[0].message);
+        throw new Error(validated.error.issues[0].message);
       }
       return journalApi.update(id, validated.data);
     },

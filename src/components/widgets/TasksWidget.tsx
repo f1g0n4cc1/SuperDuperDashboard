@@ -2,6 +2,7 @@ import React from 'react';
 import { useTasks } from '../../hooks/useTasks';
 import { WidgetContainer } from '../WidgetContainer';
 import { CheckCircle2, Circle, Plus, Loader2 } from 'lucide-react';
+import type { Task } from '../../types/tasks';
 
 export const TasksWidget: React.FC = () => {
   const { tasks, isLoading, updateTask, createTask } = useTasks();
@@ -64,15 +65,15 @@ export const TasksWidget: React.FC = () => {
             <div className="flex items-center justify-center py-10">
               <Loader2 className="w-6 h-6 animate-spin text-batcave-blue" />
             </div>
-          ) : tasks.length === 0 ? (
+          ) : (tasks as Task[]).length === 0 ? (
             <div className="text-center py-10 text-batcave-text-secondary text-sm italic">
               No active objectives.
             </div>
           ) : (
-            tasks.map((task) => (
+            (tasks as Task[]).map((task) => (
               <div 
                 key={task.id}
-                onClick={() => handleToggle(task.id, task.status)}
+                onClick={() => handleToggle(task.id, task.status || '')}
                 className={`flex items-center p-3 rounded-xl border transition-all cursor-pointer group ${
                   task.status === 'done' 
                     ? 'bg-white/2 border-transparent opacity-50' 
@@ -89,7 +90,7 @@ export const TasksWidget: React.FC = () => {
                 <span className={`text-sm font-medium ${task.status === 'done' ? 'line-through' : ''}`}>
                   {task.title}
                 </span>
-                {task.priority > 2 && (
+                {task.priority && task.priority > 2 && (
                   <span className="ml-auto w-2 h-2 rounded-full bg-batcave-red shadow-[0_0_8px_#ef4444]" />
                 )}
               </div>
