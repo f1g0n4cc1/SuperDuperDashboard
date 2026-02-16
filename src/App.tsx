@@ -16,7 +16,34 @@ import { AuthProvider, useAuth } from './context/AuthContext';
 import { supabase } from './services/supabase';
 import { useUserSettings } from './hooks/useUserSettings';
 import { useTasks } from './hooks/useTasks';
-import { ChevronLeft, ChevronRight, Loader2, Plus } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Loader2, Plus, AlertTriangle, RefreshCw } from 'lucide-react';
+import { ErrorBoundary } from './components/ErrorBoundary';
+
+const SafeModeLayout = () => (
+  <div className="h-screen w-full flex items-center justify-center bg-batcave-bg text-white px-6">
+    <div className="glass-panel p-10 rounded-3xl max-w-lg w-full text-center border border-red-500/20">
+      <AlertTriangle className="w-12 h-12 text-red-500 mx-auto mb-6" />
+      <h1 className="text-2xl font-bold mb-2">System Instability Detected</h1>
+      <p className="text-batcave-text-secondary text-sm mb-8">
+        We're having trouble loading your custom workspace. Your data is safe, but the dashboard layout is currently unavailable.
+      </p>
+      <div className="grid grid-cols-2 gap-4">
+        <button 
+          onClick={() => window.location.reload()} 
+          className="flex items-center justify-center gap-2 py-3 bg-white/5 hover:bg-white/10 text-white font-bold rounded-2xl transition-all"
+        >
+          <RefreshCw className="w-4 h-4" /> Retry
+        </button>
+        <button 
+          onClick={() => window.location.href = 'mailto:support@superduper.com'} 
+          className="py-3 bg-red-500/20 text-red-200 font-bold rounded-2xl hover:bg-red-500/30 transition-all"
+        >
+          Report Issue
+        </button>
+      </div>
+    </div>
+  </div>
+);
 
 const DashboardView = () => {
   const { layout, isLoading, updateLayout } = useUserSettings();
@@ -108,12 +135,25 @@ const DashboardView = () => {
 };
 
 const DashboardContent = () => {
-  const { user, loading } = useAuth();
+  const { user, loading, timedOut } = useAuth();
   const { activeView } = useViewStore();
 
-  if (loading) return (
+  if (loading && !timedOut) return (
     <div className="h-screen w-full flex items-center justify-center bg-batcave-bg text-batcave-blue">
       <Loader2 className="w-8 h-8 animate-spin" />
+    </div>
+  );
+
+  if (timedOut) return (
+    <div className="h-screen w-full flex items-center justify-center bg-batcave-bg text-white px-6">
+      <div className="glass-panel p-10 rounded-3xl max-w-md w-full text-center">
+        <AlertTriangle className="w-12 h-12 text-orange-500 mx-auto mb-6" />
+        <h1 className="text-xl font-bold mb-2">Connection Latency</h1>
+        <p className="text-batcave-text-secondary text-sm mb-8">The secure uplink is taking longer than expected. Check your network or the satellite status.</p>
+        <button onClick={() => window.location.reload()} className="w-full py-4 bg-white/10 text-white font-bold rounded-2xl hover:bg-white/20 transition-all flex items-center justify-center gap-2">
+          <RefreshCw className="w-4 h-4" /> Restart Uplink
+        </button>
+      </div>
     </div>
   );
 
@@ -147,7 +187,9 @@ const DashboardContent = () => {
 function App() {
   return (
     <AuthProvider>
-      <DashboardContent />
+      <ErrorBoundary fallback={<SafeModeLayout />}>
+        <DashboardContent />
+      </ErrorBoundary>
     </AuthProvider>
   );
 }
