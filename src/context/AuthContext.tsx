@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useEffect, useState } from 'react';
+import React, { createContext, useContext, useEffect, useState, useRef } from 'react';
 import { type Session, type User } from '@supabase/supabase-js';
 import { supabase } from '../services/supabase';
 
@@ -17,16 +17,21 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const [timedOut, setTimedOut] = useState(false);
+  const isResolved = useRef(false);
 
   useEffect(() => {
+    let isMounted = true;
+
     // Set a safety timeout for initial load
     const timer = setTimeout(() => {
-      if (loading) {
+      if (isMounted && !isResolved.current) {
         setTimedOut(true);
       }
     }, 10000);
 
     supabase.auth.getSession().then(({ data: { session } }) => {
+      if (!isMounted) return;
+      isResolved.current = true;
       setSession(session);
       setUser(session?.user ?? null);
       setLoading(false);
@@ -34,6 +39,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     });
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      if (!isMounted) return;
+      isResolved.current = true;
       setSession(session);
       setUser(session?.user ?? null);
       setLoading(false);
@@ -41,10 +48,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     });
 
     return () => {
+      isMounted = false;
       subscription.unsubscribe();
       clearTimeout(timer);
     };
-  }, [loading]);
+  }, []);
 
   const signOut = async () => {
     await supabase.auth.signOut();
