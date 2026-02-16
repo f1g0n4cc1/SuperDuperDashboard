@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { DashboardLayout } from './components/DashboardLayout';
 import { Sidebar } from './components/Sidebar';
 import { WidgetContainer } from './components/WidgetContainer';
@@ -18,8 +17,6 @@ import { supabase } from './services/supabase';
 import { useUserSettings } from './hooks/useUserSettings';
 import { useTasks } from './hooks/useTasks';
 import { ChevronLeft, ChevronRight, Loader2, Plus } from 'lucide-react';
-
-const queryClient = new QueryClient();
 
 const DashboardView = () => {
   const { layout, isLoading, updateLayout } = useUserSettings();
@@ -149,11 +146,9 @@ const DashboardContent = () => {
 
 function App() {
   return (
-    <QueryClientProvider client={queryClient}>
-      <AuthProvider>
-        <DashboardContent />
-      </AuthProvider>
-    </QueryClientProvider>
+    <AuthProvider>
+      <DashboardContent />
+    </AuthProvider>
   );
 }
 

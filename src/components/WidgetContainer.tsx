@@ -1,4 +1,5 @@
 import React from 'react';
+import { ErrorBoundary } from './ErrorBoundary';
 
 interface WidgetContainerProps {
   title: string;
@@ -21,7 +22,9 @@ export const WidgetContainer: React.FC<WidgetContainerProps> = ({ title, childre
         </div>
       </div>
       <div className="flex-1">
-        {children}
+        <ErrorBoundary title={title}>
+          {children}
+        </ErrorBoundary>
       </div>
     </div>
   );
