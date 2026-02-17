@@ -24,8 +24,8 @@ export const GoalsWidget: React.FC = () => {
     <div className="animate-fade-in max-w-4xl mx-auto">
       <header className="mb-10 flex justify-between items-end">
         <div>
-          <h2 className="text-3xl font-bold text-white mb-2 tracking-tight">Strategic Objectives</h2>
-          <p className="text-batcave-text-secondary italic">"Track your tactical trajectory and long-term milestones."</p>
+          <h2 className="text-3xl font-black text-vault-amber mb-2 tracking-tighter uppercase vault-glow-text">A - Ambitions (Strategic Objectives)</h2>
+          <p className="text-vault-amber-secondary italic">"Track tactical trajectories and reach long-term milestones."</p>
         </div>
         <button 
           onClick={() => setIsAdding(!isAdding)}

@@ -56,8 +56,8 @@ const DashboardView = () => {
     <div className="animate-fade-in">
       <header className="mb-10 flex flex-col md:flex-row md:items-end justify-between gap-6">
         <div>
-          <h2 className="text-3xl font-bold text-white mb-2 tracking-tight">Command Center</h2>
-          <p className="text-batcave-text-secondary italic">"Awareness is the first step to control."</p>
+          <h2 className="text-3xl font-black text-vault-amber mb-2 tracking-tighter uppercase vault-glow-text">S - Schedules (Command Center)</h2>
+          <p className="text-vault-amber-secondary italic">"Perception check: Awareness is the first step to control."</p>
         </div>
         
         <QuickAdd />

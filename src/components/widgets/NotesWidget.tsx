@@ -52,8 +52,8 @@ export const NotesWidget: React.FC = () => {
     <div className="animate-fade-in max-w-6xl mx-auto h-[75vh] flex flex-col">
       <header className="mb-10 flex justify-between items-end px-2">
         <div>
-          <h2 className="text-3xl font-bold text-white mb-2 tracking-tight">Knowledge Vault</h2>
-          <p className="text-batcave-text-secondary italic">"Information is power. Secure your mission intelligence."</p>
+          <h2 className="text-3xl font-black text-vault-amber mb-2 tracking-tighter uppercase vault-glow-text">I - Ideas (Knowledge Vault)</h2>
+          <p className="text-vault-amber-secondary italic">"Secure mission intelligence. Information is your greatest power."</p>
         </div>
         <div className="flex items-center gap-4 text-[10px] uppercase tracking-widest font-bold">
           {updateNote.isPending || isTyping ? (

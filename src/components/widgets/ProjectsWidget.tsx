@@ -42,8 +42,8 @@ export const ProjectsWidget: React.FC = () => {
     <div className="animate-fade-in max-w-6xl mx-auto h-[70vh] flex flex-col">
       <header className="mb-10 flex justify-between items-end px-2">
         <div>
-          <h2 className="text-3xl font-bold text-white mb-2 tracking-tight">Project Command</h2>
-          <p className="text-batcave-text-secondary italic">"Divide and conquer. Organize your strategic operations."</p>
+          <h2 className="text-3xl font-black text-vault-amber mb-2 tracking-tighter uppercase vault-glow-text">P - Projects (Project Command)</h2>
+          <p className="text-vault-amber-secondary italic">"Divide and conquer. Compartmentalize all strategic operations."</p>
         </div>
       </header>
 

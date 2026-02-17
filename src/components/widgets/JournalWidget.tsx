@@ -97,8 +97,8 @@ export const JournalWidget: React.FC = () => {
     <div className="animate-fade-in max-w-4xl mx-auto h-full flex flex-col">
       <header className="mb-10 flex justify-between items-end px-2">
         <div>
-          <h2 className="text-3xl font-bold text-white mb-2 tracking-tight">Daily Journal</h2>
-          <p className="text-batcave-text-secondary">Document your journey and reflect on today's progress.</p>
+          <h2 className="text-3xl font-black text-vault-amber mb-2 tracking-tighter uppercase vault-glow-text">L - Logs (Daily Journal)</h2>
+          <p className="text-vault-amber-secondary italic">"Document your journey. Reflections ensure future mission success."</p>
         </div>
         
         <div className="flex flex-col items-end gap-3">

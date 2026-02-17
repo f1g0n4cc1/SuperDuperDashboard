@@ -35,8 +35,8 @@ export const HabitsWidget: React.FC = () => {
     <div className="animate-fade-in max-w-4xl mx-auto">
       <header className="mb-10 flex justify-between items-end">
         <div>
-          <h2 className="text-3xl font-bold text-white mb-2 tracking-tight">Behavioral Patterns</h2>
-          <p className="text-batcave-text-secondary italic">"Excellence is not an act, but a habit."</p>
+          <h2 className="text-3xl font-black text-vault-amber mb-2 tracking-tighter uppercase vault-glow-text">C - Checklists (Behavioral Patterns)</h2>
+          <p className="text-vault-amber-secondary italic">"Consistency is mandatory. Excellence is a repeatable habit."</p>
         </div>
         <button 
           onClick={() => setIsAdding(!isAdding)}

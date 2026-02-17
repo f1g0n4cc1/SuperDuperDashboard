@@ -53,8 +53,8 @@ export const CalendarWidget: React.FC = () => {
     <div className="animate-fade-in max-w-4xl mx-auto h-full flex flex-col">
       <header className="mb-10 flex justify-between items-end px-2">
         <div>
-          <h2 className="text-3xl font-bold text-white mb-2 tracking-tight">Tactical Agenda</h2>
-          <p className="text-batcave-text-secondary italic">"Time is your most valuable asset. Master the schedule."</p>
+          <h2 className="text-3xl font-black text-vault-amber mb-2 tracking-tighter uppercase vault-glow-text">E - Entries (Tactical Agenda)</h2>
+          <p className="text-vault-amber-secondary italic">"Master the clock. Time is your most valuable asset."</p>
         </div>
         <button 
           onClick={() => setIsAdding(!isAdding)}

@@ -1,11 +1,11 @@
 import React from 'react';
 import { useTasks } from '../../hooks/useTasks';
 import { WidgetContainer } from '../WidgetContainer';
-import { CheckCircle2, Circle, Plus, Loader2 } from 'lucide-react';
+import { CheckCircle2, Circle, Plus, Loader2, Trash2 } from 'lucide-react';
 import type { Task } from '../../types/tasks';
 
 export const TasksWidget: React.FC = () => {
-  const { tasks, isLoading, updateTask, createTask } = useTasks();
+  const { tasks, isLoading, updateTask, createTask, deleteTask } = useTasks();
   const [newTaskTitle, setNewTaskTitle] = React.useState('');
   const [newPriority, setNewPriority] = React.useState(1);
 
@@ -22,6 +22,13 @@ export const TasksWidget: React.FC = () => {
     setNewPriority(1);
   };
 
+  const handleDelete = (e: React.MouseEvent, id: string) => {
+    e.stopPropagation();
+    if (confirm('Terminate this objective?')) {
+      deleteTask.mutate(id);
+    }
+  };
+
   return (
     <WidgetContainer title="Execution Hub">
       <div className="flex flex-col h-full max-h-[500px]">
@@ -33,15 +40,15 @@ export const TasksWidget: React.FC = () => {
               value={newTaskTitle}
               onChange={(e) => setNewTaskTitle(e.target.value)}
               placeholder="Deploy new objective..."
-              className="w-full bg-white/5 border border-white/10 rounded-xl py-2.5 px-4 pr-10 text-sm focus:outline-none focus:border-batcave-blue transition-colors"
+              className="w-full bg-white/5 border border-white/10 rounded-xl py-2.5 px-4 pr-10 text-sm focus:outline-none focus:border-vault-amber transition-colors"
             />
-            <button type="submit" className="absolute right-2 top-2 text-batcave-blue hover:text-white transition-colors">
+            <button type="submit" className="absolute right-2 top-2 text-vault-amber hover:text-white transition-colors">
               {createTask.isPending ? <Loader2 className="w-5 h-5 animate-spin" /> : <Plus className="w-5 h-5" />}
             </button>
           </div>
           
           <div className="flex items-center gap-3">
-            <span className="text-[9px] uppercase tracking-widest font-bold text-gray-500">Priority Level:</span>
+            <span className="text-[9px] uppercase tracking-widest font-bold text-vault-amber-secondary">Priority Level:</span>
             {[1, 2, 3, 4].map((p) => (
               <button
                 key={p}
@@ -49,8 +56,8 @@ export const TasksWidget: React.FC = () => {
                 onClick={() => setNewPriority(p)}
                 className={`w-6 h-6 rounded-md text-[10px] font-bold transition-all border ${
                   newPriority === p 
-                    ? 'bg-batcave-blue border-batcave-blue text-white shadow-[0_0_10px_rgba(59,130,246,0.5)]' 
-                    : 'bg-white/5 border-white/5 text-gray-500 hover:border-white/10'
+                    ? 'bg-vault-amber border-vault-amber text-black shadow-[0_0_10px_rgba(255,182,66,0.5)]' 
+                    : 'bg-white/5 border-white/5 text-vault-amber-secondary hover:border-white/10'
                 }`}
               >
                 {p}
@@ -63,10 +70,10 @@ export const TasksWidget: React.FC = () => {
         <div className="flex-1 overflow-y-auto custom-scrollbar space-y-2 pr-1">
           {isLoading ? (
             <div className="flex items-center justify-center py-10">
-              <Loader2 className="w-6 h-6 animate-spin text-batcave-blue" />
+              <Loader2 className="w-6 h-6 animate-spin text-vault-amber" />
             </div>
           ) : (tasks as Task[]).length === 0 ? (
-            <div className="text-center py-10 text-batcave-text-secondary text-sm italic">
+            <div className="text-center py-10 text-vault-amber-secondary text-sm italic">
               No active objectives.
             </div>
           ) : (
@@ -80,9 +87,9 @@ export const TasksWidget: React.FC = () => {
                     : 'bg-white/5 border-white/5 hover:border-white/10'
                 }`}
               >
-                <div className="mr-3 text-batcave-blue">
+                <div className="mr-3 text-vault-amber">
                   {task.status === 'done' ? (
-                    <CheckCircle2 className="w-5 h-5 shadow-[0_0_10px_rgba(59,130,246,0.3)]" />
+                    <CheckCircle2 className="w-5 h-5 shadow-[0_0_10px_rgba(255,182,66,0.3)]" />
                   ) : (
                     <Circle className="w-5 h-5 group-hover:scale-110 transition-transform" />
                   )}
@@ -90,9 +97,17 @@ export const TasksWidget: React.FC = () => {
                 <span className={`text-sm font-medium ${task.status === 'done' ? 'line-through' : ''}`}>
                   {task.title}
                 </span>
-                {task.priority && task.priority > 2 && (
-                  <span className="ml-auto w-2 h-2 rounded-full bg-batcave-red shadow-[0_0_8px_#ef4444]" />
-                )}
+                <div className="ml-auto flex items-center gap-3">
+                  {task.priority && task.priority > 2 && (
+                    <span className="w-2 h-2 rounded-full bg-red-500 shadow-[0_0_8px_#ef4444]" />
+                  )}
+                  <button 
+                    onClick={(e) => handleDelete(e, task.id)}
+                    className="p-1 text-gray-700 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-opacity"
+                  >
+                    <Trash2 className="w-4 h-4" />
+                  </button>
+                </div>
               </div>
             ))
           )}
