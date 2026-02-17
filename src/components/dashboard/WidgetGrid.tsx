@@ -9,6 +9,7 @@ import { NotesWidget } from '../widgets/NotesWidget';
 import { CalendarWidget } from '../widgets/CalendarWidget';
 import { SettingsWidget } from '../widgets/SettingsWidget';
 import { StatsWidget } from '../widgets/StatsWidget';
+import { QuickNoteCapture } from './QuickNoteCapture';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { type DashboardLayout as LayoutType } from '../../types/settings';
 
@@ -58,7 +59,7 @@ export const WidgetGrid: React.FC<WidgetGridProps> = ({ layout, updateLayout }) 
             case 'ambitions': return <GoalsWidget />;
             case 'checklists': return <HabitsWidget />;
             case 'projects': return <ProjectsWidget />;
-            case 'ideas': return <NotesWidget />;
+            case 'ideas': return <QuickNoteCapture />;
             case 'entries': return <CalendarWidget />;
             case 'settings': return <SettingsWidget />;
             case 'intel': return <StatsWidget />;
