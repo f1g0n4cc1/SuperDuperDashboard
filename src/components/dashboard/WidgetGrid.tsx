@@ -8,6 +8,7 @@ import { ProjectsWidget } from '../widgets/ProjectsWidget';
 import { NotesWidget } from '../widgets/NotesWidget';
 import { CalendarWidget } from '../widgets/CalendarWidget';
 import { SettingsWidget } from '../widgets/SettingsWidget';
+import { StatsWidget } from '../widgets/StatsWidget';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { type DashboardLayout as LayoutType } from '../../types/settings';
 
@@ -60,6 +61,7 @@ export const WidgetGrid: React.FC<WidgetGridProps> = ({ layout, updateLayout }) 
             case 'ideas': return <NotesWidget />;
             case 'entries': return <CalendarWidget />;
             case 'settings': return <SettingsWidget />;
+            case 'intel': return <StatsWidget />;
             default:
               return (
                 <div className="flex flex-col items-center justify-center h-full py-10 border border-dashed border-white/5 rounded-2xl">
