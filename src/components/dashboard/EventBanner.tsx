@@ -46,9 +46,9 @@ export const EventBanner: React.FC = () => {
         </div>
         <div>
           <h4 className="text-[10px] uppercase tracking-[0.2em] text-batcave-text-secondary font-bold mb-1">
-            Tactical Status
+            Active Quest
           </h4>
-          <h3 className="text-xl font-bold text-gray-500 tracking-tight">No upcoming engagements scheduled.</h3>
+          <h3 className="text-xl font-bold text-gray-500 tracking-tight">Start a quest to see details.</h3>
         </div>
       </div>
     );

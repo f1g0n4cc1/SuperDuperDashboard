@@ -1,25 +1,27 @@
+@import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 :root {
-  background-color: #050505;
-  color: #f8fafc;
-  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+  background-color: #141008;
+  color: #FFB642;
+  font-family: 'Share Tech Mono', monospace;
 }
 
 body {
   margin: 0;
   min-height: 100vh;
-  /* The Batcave Depth: Corner glows that make glass pop */
-  background: #050505;
+  background: #141008;
+  /* The Vault Vignette */
   background-image: 
-    radial-gradient(at 0% 0%, rgba(59, 130, 246, 0.05) 0px, transparent 50%),
-    radial-gradient(at 100% 0%, rgba(37, 99, 235, 0.05) 0px, transparent 50%);
+    radial-gradient(circle at center, transparent 0%, rgba(0, 0, 0, 0.4) 100%);
   background-attachment: fixed;
+  color: #FFB642;
 }
 
-/* Custom scrollbar */
+/* Custom scrollbar - Amber Industrial */
 .custom-scrollbar::-webkit-scrollbar {
   width: 6px;
 }
@@ -27,9 +29,13 @@ body {
   background: transparent;
 }
 .custom-scrollbar::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.05);
+  background: rgba(255, 182, 66, 0.1);
   border-radius: 10px;
 }
 .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-  background: rgba(255, 255, 255, 0.1);
+  background: rgba(255, 182, 66, 0.2);
+}
+
+.vault-glow-text {
+  text-shadow: 0 0 8px rgba(255, 182, 66, 0.6);
 }

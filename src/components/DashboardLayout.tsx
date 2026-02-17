@@ -7,8 +7,8 @@ interface DashboardLayoutProps {
 
 export const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children, sidebar }) => {
   return (
-    <div className="h-screen w-full grid grid-cols-[auto_1fr] bg-batcave-bg text-batcave-text overflow-hidden">
-      <aside className="h-full glass-panel border-r border-batcave-border z-20">
+    <div className="h-screen w-full grid grid-cols-[auto_1fr] bg-vault-bg text-vault-amber overflow-hidden crt-overlay font-mono">
+      <aside className="h-full glass-panel border-r border-vault-amber/10 z-20">
         {sidebar}
       </aside>
       <main className="h-full overflow-y-auto relative custom-scrollbar">

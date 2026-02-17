@@ -32,7 +32,7 @@ export const Sidebar: React.FC = () => {
         </h1>
         <button 
           onClick={() => setActiveView('Settings')}
-          className={`p-2 rounded-lg transition-colors ${activeView === 'Settings' ? 'text-batcave-blue' : 'text-gray-500 hover:text-white'}`}
+          className={`p-2 rounded-lg transition-colors ${activeView === 'Settings' ? 'text-vault-amber' : 'text-vault-amber-secondary hover:text-vault-amber'}`}
         >
           <Settings className="w-4 h-4" />
         </button>
@@ -47,30 +47,30 @@ export const Sidebar: React.FC = () => {
               onClick={() => setActiveView(item.label)}
               className={`w-full flex items-center p-3 rounded-xl transition-all duration-300 group relative ${
                 isActive 
-                  ? 'bg-batcave-blue/10 text-batcave-blue shadow-[0_0_20px_rgba(59,130,246,0.15)]' 
-                  : 'text-gray-500 hover:bg-white/5 hover:text-gray-300'
+                  ? 'bg-vault-amber/10 text-vault-amber shadow-[0_0_20px_rgba(255,182,66,0.1)]' 
+                  : 'text-vault-amber-secondary hover:bg-white/5 hover:text-vault-amber'
               }`}
             >
               {/* Active Indicator Border */}
               {isActive && (
-                <div className="absolute left-0 w-1 h-6 bg-batcave-blue rounded-r-full shadow-[0_0_10px_#3b82f6]" />
+                <div className="absolute left-0 w-1 h-6 bg-vault-amber rounded-r-full shadow-[0_0_10px_rgba(255,182,66,0.5)]" />
               )}
               
               <item.icon className={`w-5 h-5 mr-4 transition-transform group-hover:scale-110 ${
-                isActive ? 'text-batcave-blue' : ''
+                isActive ? 'text-vault-amber' : ''
               }`} />
-              <span className="font-medium text-sm">{item.label}</span>
+              <span className="font-bold text-xs uppercase tracking-widest vault-glow-text">{item.label}</span>
             </button>
           );
         })}
       </nav>
       
       <div className="px-4 mt-auto pt-4">
-        <div className="p-4 glass-panel rounded-2xl">
-          <p className="text-[10px] text-gray-500 mb-1 font-semibold tracking-widest uppercase">Encryption</p>
+        <div className="p-4 glass-panel rounded-2xl border-vault-amber/5">
+          <p className="text-[10px] text-vault-amber-secondary mb-1 font-black tracking-widest uppercase">Encryption Status</p>
           <div className="flex items-center">
-            <div className="w-2 h-2 rounded-full bg-green-500 mr-2 shadow-[0_0_8px_#22c55e]" />
-            <span className="text-xs font-medium">AES-256 ACTIVE</span>
+            <div className="w-2 h-2 rounded-full bg-vault-amber mr-2 shadow-[0_0_8px_rgba(255,182,66,0.5)] animate-pulse" />
+            <span className="text-[10px] font-bold text-vault-amber">VAULT-PROTOCOL-101</span>
           </div>
         </div>
       </div>
