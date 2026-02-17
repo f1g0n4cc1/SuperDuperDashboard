@@ -88,11 +88,21 @@ export const useTasks = (projectId?: string) => {
     },
   });
 
+  const deleteTask = useMutation({
+    mutationFn: (id: string) => tasksApi.delete(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey });
+      toast.success('Objective terminated');
+    },
+    onError: () => toast.error('Failed to terminate objective')
+  });
+
   return {
     tasks,
     isLoading,
     error,
     createTask,
     updateTask,
+    deleteTask
   };
 };
