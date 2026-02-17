@@ -1,14 +1,14 @@
 import { create } from 'zustand';
 
 export type ViewType = 
-  | 'Dashboard' 
-  | 'Calendar' 
-  | 'Notes' 
-  | 'Goal' 
+  | 'Schedules' 
   | 'Projects' 
-  | 'Journal' 
-  | 'Habits'
-  | 'Settings'; // Keeping Settings as a utility view
+  | 'Entries' 
+  | 'Checklists' 
+  | 'Ideas' 
+  | 'Ambitions' 
+  | 'Logs'
+  | 'Settings'; 
 
 interface ViewState {
   activeView: ViewType;
@@ -16,6 +16,6 @@ interface ViewState {
 }
 
 export const useViewStore = create<ViewState>((set) => ({
-  activeView: 'Dashboard',
+  activeView: 'Schedules',
   setActiveView: (view) => set({ activeView: view }),
 }));

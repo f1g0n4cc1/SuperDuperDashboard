@@ -53,12 +53,12 @@ export const WidgetGrid: React.FC<WidgetGridProps> = ({ layout, updateLayout }) 
         const renderWidgetContent = () => {
           switch (widget.type) {
             case 'tasks': return <TasksWidget />;
-            case 'journal': return <JournalWidget />;
-            case 'goals': return <GoalsWidget />;
-            case 'habits': return <HabitsWidget />;
+            case 'logs': return <JournalWidget />;
+            case 'ambitions': return <GoalsWidget />;
+            case 'checklists': return <HabitsWidget />;
             case 'projects': return <ProjectsWidget />;
-            case 'notes': return <NotesWidget />;
-            case 'calendar': return <CalendarWidget />;
+            case 'ideas': return <NotesWidget />;
+            case 'entries': return <CalendarWidget />;
             case 'settings': return <SettingsWidget />;
             default:
               return (

@@ -7,8 +7,8 @@ import { useAuth } from '../context/AuthContext';
 const DEFAULT_LAYOUT: DashboardLayout = {
   widgets: [
     { id: 'tasks-1', type: 'tasks', title: 'Mission Objectives' },
-    { id: 'intel-1', type: 'intel', title: 'Intelligence Overview' },
-    { id: 'notes-1', type: 'notes', title: 'Quick Notes' },
+    { id: 'entries-1', type: 'entries', title: 'Tactical Agenda' },
+    { id: 'ideas-1', type: 'ideas', title: 'Quick Notes' },
   ],
 };
 

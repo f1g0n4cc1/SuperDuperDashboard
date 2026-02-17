@@ -102,7 +102,7 @@ const DashboardContent = () => {
     return (
       <div className="h-screen w-full flex items-center justify-center bg-batcave-bg text-white px-6">
         <div className="glass-panel p-10 rounded-3xl max-w-md w-full text-center">
-          <h1 className="text-3xl font-bold mb-4 tracking-tighter bg-gradient-to-r from-white to-gray-500 bg-clip-text text-transparent">BATCAVE</h1>
+          <h1 className="text-3xl font-black mb-4 tracking-tighter bg-gradient-to-r from-white to-gray-500 bg-clip-text text-transparent uppercase">VAULT 101</h1>
           <button onClick={handleLogin} className="w-full py-4 bg-white text-black font-bold rounded-2xl hover:bg-gray-200 transition-all shadow-[0_0_20px_rgba(255,255,255,0.1)]">Sign in with Google</button>
         </div>
       </div>
@@ -111,13 +111,13 @@ const DashboardContent = () => {
 
   return (
     <DashboardLayout sidebar={<Sidebar />}>
-      {activeView === 'Dashboard' && <DashboardView />}
-      {activeView === 'Calendar' && <CalendarWidget />}
-      {activeView === 'Notes' && <NotesWidget />}
-      {activeView === 'Goal' && <GoalsWidget />}
+      {activeView === 'Schedules' && <DashboardView />}
+      {activeView === 'Entries' && <CalendarWidget />}
+      {activeView === 'Ideas' && <NotesWidget />}
+      {activeView === 'Ambitions' && <GoalsWidget />}
       {activeView === 'Projects' && <ProjectsWidget />}
-      {activeView === 'Journal' && <JournalWidget />}
-      {activeView === 'Habits' && <HabitsWidget />}
+      {activeView === 'Logs' && <JournalWidget />}
+      {activeView === 'Checklists' && <HabitsWidget />}
       {activeView === 'Settings' && <SettingsWidget />}
     </DashboardLayout>
   );

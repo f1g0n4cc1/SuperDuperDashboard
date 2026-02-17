@@ -12,8 +12,8 @@ export const Login: React.FC = () => {
   return (
     <div className="flex h-screen items-center justify-center bg-batcave-bg px-6">
       <div className="glass-panel w-full max-w-md p-10 text-center rounded-3xl">
-        <h1 className="mb-2 text-3xl font-bold tracking-tighter bg-gradient-to-r from-white to-gray-500 bg-clip-text text-transparent">
-          SUPER DUPER
+        <h1 className="mb-2 text-3xl font-black tracking-tighter bg-gradient-to-r from-white to-gray-500 bg-clip-text text-transparent">
+          VAULT 101
         </h1>
         <p className="mb-8 text-batcave-text-secondary text-sm font-medium">Enter the workspace.</p>
         

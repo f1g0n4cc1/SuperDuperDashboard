@@ -15,20 +15,20 @@ export const Sidebar: React.FC = () => {
   const { activeView, setActiveView } = useViewStore();
 
   const navItems: { icon: any, label: ViewType }[] = [
-    { icon: Home, label: 'Dashboard' },
-    { icon: CalendarIcon, label: 'Calendar' },
-    { icon: FileText, label: 'Notes' },
-    { icon: Target, label: 'Goal' },
+    { icon: Home, label: 'Schedules' },
     { icon: Layout, label: 'Projects' },
-    { icon: Book, label: 'Journal' },
-    { icon: Activity, label: 'Habits' },
+    { icon: CalendarIcon, label: 'Entries' },
+    { icon: Activity, label: 'Checklists' },
+    { icon: FileText, label: 'Ideas' },
+    { icon: Target, label: 'Ambitions' },
+    { icon: Book, label: 'Logs' },
   ];
 
   return (
     <div className="w-64 flex flex-col h-full py-6 relative">
       <div className="px-6 mb-10 flex items-center justify-between">
-        <h1 className="text-xl font-bold bg-gradient-to-r from-white to-gray-500 bg-clip-text text-transparent">
-          BATCAVE
+        <h1 className="text-xl font-black tracking-tighter bg-gradient-to-r from-white to-gray-500 bg-clip-text text-transparent uppercase">
+          VAULT 101
         </h1>
         <button 
           onClick={() => setActiveView('Settings')}
