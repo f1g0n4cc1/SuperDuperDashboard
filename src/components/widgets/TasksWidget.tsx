@@ -33,47 +33,49 @@ export const TasksWidget: React.FC = () => {
     <WidgetContainer title="Execution Hub">
       <div className="flex flex-col h-full max-h-[500px]">
         {/* Add Task Input with Priority Selection */}
-        <form onSubmit={handleAdd} className="mb-6 space-y-3">
+        <form onSubmit={handleAdd} className="mb-10 space-y-6">
           <div className="relative group">
             <input
               type="text"
               value={newTaskTitle}
               onChange={(e) => setNewTaskTitle(e.target.value)}
               placeholder="Deploy new objective..."
-              className="w-full bg-white/5 border border-white/10 rounded-xl py-2.5 px-4 pr-10 text-sm focus:outline-none focus:border-vault-amber transition-colors"
+              className="w-full bg-white/5 border border-white/10 rounded-xl py-3 px-5 pr-12 text-xs font-bold text-vault-amber outline-none focus:border-vault-amber/50 transition-all tracking-terminal placeholder:text-vault-amber/10"
             />
-            <button type="submit" className="absolute right-2 top-2 text-vault-amber hover:text-white transition-colors">
+            <button type="submit" className="absolute right-3 top-2.5 text-vault-amber/40 hover:text-vault-amber transition-colors">
               {createTask.isPending ? <Loader2 className="w-5 h-5 animate-spin" /> : <Plus className="w-5 h-5" />}
             </button>
           </div>
           
-          <div className="flex items-center gap-3">
-            <span className="text-[9px] uppercase tracking-widest font-bold text-vault-amber-secondary">Priority Level:</span>
-            {[1, 2, 3, 4].map((p) => (
-              <button
-                key={p}
-                type="button"
-                onClick={() => setNewPriority(p)}
-                className={`w-6 h-6 rounded-md text-[10px] font-bold transition-all border ${
-                  newPriority === p 
-                    ? 'bg-vault-amber border-vault-amber text-black shadow-[0_0_10px_rgba(255,182,66,0.5)]' 
-                    : 'bg-white/5 border-white/5 text-vault-amber-secondary hover:border-white/10'
-                }`}
-              >
-                {p}
-              </button>
-            ))}
+          <div className="flex items-center gap-4 px-1">
+            <span className="text-[8px] uppercase tracking-terminal-wide font-black text-vault-amber-secondary opacity-40">Priority Level:</span>
+            <div className="flex gap-2">
+              {[1, 2, 3, 4].map((p) => (
+                <button
+                  key={p}
+                  type="button"
+                  onClick={() => setNewPriority(p)}
+                  className={`w-7 h-7 rounded-lg text-[10px] font-black transition-all border ${
+                    newPriority === p 
+                      ? 'bg-vault-amber border-vault-amber text-black shadow-vault-glow' 
+                      : 'bg-white/5 border-white/5 text-vault-amber-secondary hover:border-vault-amber/20'
+                  }`}
+                >
+                  {p}
+                </button>
+              ))}
+            </div>
           </div>
         </form>
 
         {/* Task List */}
-        <div className="flex-1 overflow-y-auto custom-scrollbar space-y-2 pr-1">
+        <div className="flex-1 overflow-y-auto custom-scrollbar space-y-3 pr-1">
           {isLoading ? (
             <div className="flex items-center justify-center py-10">
               <Loader2 className="w-6 h-6 animate-spin text-vault-amber" />
             </div>
           ) : (tasks as Task[]).length === 0 ? (
-            <div className="text-center py-10 text-vault-amber-secondary text-sm italic">
+            <div className="text-center py-10 text-vault-amber-secondary/20 text-[10px] font-black uppercase tracking-widest italic">
               No active objectives.
             </div>
           ) : (
@@ -81,31 +83,31 @@ export const TasksWidget: React.FC = () => {
               <div 
                 key={task.id}
                 onClick={() => handleToggle(task.id, task.status || '')}
-                className={`flex items-center p-3 rounded-xl border transition-all cursor-pointer group ${
+                className={`flex items-center p-4 rounded-2xl border transition-all cursor-pointer group ${
                   task.status === 'done' 
-                    ? 'bg-white/2 border-transparent opacity-50' 
-                    : 'bg-white/5 border-white/5 hover:border-white/10'
+                    ? 'bg-white/[0.01] border-transparent opacity-20' 
+                    : 'bg-white/5 border-white/5 hover:border-vault-amber/20 hover:bg-vault-amber/[0.02]'
                 }`}
               >
-                <div className="mr-3 text-vault-amber">
+                <div className="mr-4 text-vault-amber">
                   {task.status === 'done' ? (
-                    <CheckCircle2 className="w-5 h-5 shadow-[0_0_10px_rgba(255,182,66,0.3)]" />
+                    <CheckCircle2 className="w-4 h-4 opacity-50" />
                   ) : (
-                    <Circle className="w-5 h-5 group-hover:scale-110 transition-transform" />
+                    <Circle className="w-4 h-4 group-hover:scale-110 transition-transform opacity-30" />
                   )}
                 </div>
-                <span className={`text-sm font-medium ${task.status === 'done' ? 'line-through' : ''}`}>
+                <span className={`text-[11px] font-black tracking-terminal uppercase ${task.status === 'done' ? 'line-through' : 'text-vault-amber vault-glow-text'}`}>
                   {task.title}
                 </span>
                 <div className="ml-auto flex items-center gap-3">
                   {task.priority && task.priority > 2 && (
-                    <span className="w-2 h-2 rounded-full bg-red-500 shadow-[0_0_8px_#ef4444]" />
+                    <span className="w-1.5 h-1.5 rounded-full bg-red-500 shadow-[0_0_8px_#ef4444]" />
                   )}
                   <button 
                     onClick={(e) => handleDelete(e, task.id)}
-                    className="p-1 text-gray-700 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-opacity"
+                    className="p-1 text-vault-amber/10 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-opacity"
                   >
-                    <Trash2 className="w-4 h-4" />
+                    <Trash2 className="w-3.5 h-3.5" />
                   </button>
                 </div>
               </div>

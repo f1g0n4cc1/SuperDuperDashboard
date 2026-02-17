@@ -1,5 +1,5 @@
 import React from 'react';
-import { Bell, Clock, ExternalLink, Loader2, Calendar } from 'lucide-react';
+import { Bell, Clock, Loader2, Calendar } from 'lucide-react';
 import { useCalendarSync } from '../../hooks/useCalendarSync';
 import { useViewStore } from '../../context/viewStore';
 
@@ -32,80 +32,72 @@ export const EventBanner: React.FC = () => {
 
   if (isLoading) {
     return (
-      <div className="glass-panel bg-batcave-panel/40 p-6 rounded-3xl mb-8 flex items-center justify-center h-24">
-        <Loader2 className="w-6 h-6 animate-spin text-batcave-blue" />
+      <div className="glass-panel bg-vault-surface/40 p-6 rounded-3xl mb-10 flex items-center justify-center h-24">
+        <Loader2 className="w-6 h-6 animate-spin text-vault-amber" />
       </div>
     );
   }
 
   if (upcomingEvents.length === 0) {
     return (
-      <div className="glass-panel bg-batcave-panel/40 p-6 rounded-3xl mb-8 flex items-center gap-6 group">
+      <div className="glass-panel bg-vault-surface/40 p-6 rounded-3xl mb-10 flex items-center gap-6 group border-vault-amber/5">
         <div className="p-4 bg-white/5 rounded-2xl">
-          <Bell className="w-6 h-6 text-gray-600" />
+          <Bell className="w-6 h-6 text-vault-amber/20" />
         </div>
         <div>
-          <h4 className="text-[10px] uppercase tracking-[0.2em] text-batcave-text-secondary font-bold mb-1">
+          <h4 className="text-[8px] uppercase tracking-terminal-wide text-vault-amber-secondary font-black opacity-40 mb-1">
             Active Quest
           </h4>
-          <h3 className="text-xl font-bold text-gray-500 tracking-tight">Start a quest to see details.</h3>
+          <h3 className="text-xl font-black text-vault-amber/20 tracking-tighter uppercase">Start a quest to see details.</h3>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="glass-panel bg-batcave-panel/40 p-6 rounded-3xl mb-8 flex flex-col gap-6">
+    <div className="glass-panel bg-vault-surface/40 p-4 rounded-3xl mb-10 flex flex-col gap-4 border-vault-amber/5">
       <div className="flex items-center justify-between px-2">
         <div className="flex items-center gap-3">
-          <div className="p-2 bg-batcave-yellow/10 rounded-lg">
-            <Calendar className="w-4 h-4 text-batcave-yellow" />
-          </div>
-          <h4 className="text-[10px] uppercase tracking-[0.2em] text-batcave-text-secondary font-black">
-            Strategic Engagements: Next 72 Hours
+          <Calendar className="w-3 h-3 text-vault-amber-secondary" />
+          <h4 className="text-[8px] uppercase tracking-terminal-wide text-vault-amber-secondary font-black">
+            Active Quest: Next 72 Hours
           </h4>
         </div>
         <button 
-          onClick={() => setActiveView('Calendar')}
-          className="text-[10px] font-black uppercase text-batcave-blue hover:text-white transition-all tracking-widest"
+          onClick={() => setActiveView('Entries')}
+          className="text-[8px] font-black uppercase text-vault-amber/40 hover:text-vault-amber transition-all tracking-widest"
         >
-          View Full Agenda
+          Expand Agenda
         </button>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-3">
         {upcomingEvents.map((event, index) => (
           <div 
             key={event.id}
-            className={`flex items-center gap-4 p-4 rounded-2xl transition-all border group ${
+            className={`flex items-center gap-3 p-3 rounded-2xl transition-all border group ${
               index === 0 
-                ? 'bg-white/5 border-white/10 shadow-[0_0_20px_rgba(255,255,255,0.02)]' 
-                : 'bg-white/[0.02] border-transparent hover:bg-white/[0.04]'
+                ? 'bg-vault-amber/5 border-vault-amber/20 shadow-vault-glow' 
+                : 'bg-white/[0.01] border-transparent hover:bg-white/[0.02]'
             }`}
           >
-            <div className={`w-1 h-8 rounded-full ${
-              index === 0 ? 'bg-batcave-yellow shadow-[0_0_10px_#eab308]' : 'bg-gray-800'
+            <div className={`w-0.5 h-6 rounded-full ${
+              index === 0 ? 'bg-vault-amber shadow-vault-glow' : 'bg-vault-surface'
             }`} />
             
             <div className="flex-1 min-w-0">
-              <h3 className={`text-sm font-bold truncate transition-colors ${
-                index === 0 ? 'text-white' : 'text-gray-400 group-hover:text-gray-200'
+              <h3 className={`text-[11px] font-black tracking-terminal truncate transition-colors ${
+                index === 0 ? 'text-vault-amber vault-glow-text' : 'text-vault-amber-secondary group-hover:text-vault-amber'
               }`}>
                 {event.title}
               </h3>
-              <div className="flex items-center gap-2 mt-1">
-                <Clock className="w-3 h-3 text-batcave-blue" />
-                <span className="text-[10px] text-batcave-text-secondary font-medium">
+              <div className="flex items-center gap-2 mt-0.5">
+                <Clock className="w-2.5 h-2.5 text-vault-amber/30" />
+                <span className="text-[9px] text-vault-amber/40 font-bold uppercase tracking-tighter">
                   {formatEventTime(event.start_time)}
                 </span>
               </div>
             </div>
-
-            {event.is_external && (
-              <div className="p-1.5 bg-batcave-blue/10 rounded-lg">
-                <ExternalLink className="w-3 h-3 text-batcave-blue" />
-              </div>
-            )}
           </div>
         ))}
       </div>
